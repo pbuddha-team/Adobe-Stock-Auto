@@ -1,0 +1,337 @@
+---
+name: pixelbuddha-adobe-stock-automation
+description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh Codex install: verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, ZIP listings, maintain batch automation reports, and continue into metadata/CSV work. Use when the user asks to run, document, debug, or extend Pixelbuddha Adobe Stock automation steps."
+---
+
+# Pixelbuddha Adobe Stock Automation
+
+Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean Codex environment, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates final ZIPs, and keeps an auditable batch report. Step 4 metadata and CSV work is expected next, but the exact CSV schema is not present in the current artifacts, so do not invent columns without a template or source CSV.
+
+## Fresh Codex Setup
+
+Before touching a batch, verify local tools:
+
+```sh
+node --version
+python3 --version
+git --version
+rg --version
+python3 -c "import PIL; print(PIL.__version__)"
+```
+
+Requirements:
+
+- Node.js 18+ with built-in `fetch`; Node 22 is known good.
+- Python 3.10+; Python 3.12 is known good.
+- Python package `Pillow` for image work in `build-preview-listings.py`.
+- Git and ripgrep for repository inspection.
+- Dropbox credentials in `.env` or shell environment.
+
+If `Pillow` is missing, install it only after approval if network access or global writes are needed:
+
+```sh
+python3 -m pip install --user Pillow
+```
+
+If Node or Python is missing, ask before installing system packages. On macOS, Homebrew installations may be appropriate, but do not assume Homebrew exists or install silently.
+
+## Script Location
+
+Prefer project-level scripts when present:
+
+```text
+scripts/dropbox-products.mjs
+scripts/build-preview-listings.py
+scripts/zip-final-listings.py
+```
+
+This skill also bundles copies under:
+
+```text
+skills/pixelbuddha-adobe-stock-automation/scripts/
+```
+
+When running inside an employee's cloned automation repo, use the repo scripts so local updates win. If the user only installed the skill and no project scripts exist, run the bundled scripts from the skill folder.
+
+## Environment
+
+Never print Dropbox secrets. Required shared credentials/config:
+
+```text
+DROPBOX_APP_KEY=
+DROPBOX_APP_SECRET=
+DROPBOX_REFRESH_TOKEN=
+DROPBOX_AUTO_JSON_PATH=/Products/auto.json
+DROPBOX_MAX_PSD_MB=500
+STEP1_LOG_PATH=step1-log.json
+```
+
+Optional:
+
+```text
+DROPBOX_ACCESS_TOKEN=
+DROPBOX_BATCH_ROOT=.
+DROPBOX_PRODUCTS_ROOT=/Pixelbuddha/Products
+DROPBOX_SELECT_USER=
+DROPBOX_PATH_ROOT_NAMESPACE_ID=
+DROPBOX_SHARED_LINK_VISIBILITY=
+```
+
+Required Dropbox scopes:
+
+```text
+files.metadata.read
+files.content.read
+sharing.read
+sharing.write
+```
+
+Use `DROPBOX_REFRESH_TOKEN` for normal work. `DROPBOX_ACCESS_TOKEN` is only a temporary fallback.
+
+## Batch Shape
+
+Step 1 creates a local batch folder:
+
+```text
+BatchDDMMYY/
+  Product folders...
+```
+
+Steps 2 and 3 write final listing output under:
+
+```text
+BatchDDMMYY/Adobe/
+  ListingFolderName/
+    Listing Name.PSDT
+    Thumbnail.jpg
+    Preview1.jpg
+  ListingFolderName.zip
+  BatchDDMMYY-automation-report.json
+```
+
+Source product folders must stay intact. Copy files into `BatchDDMMYY/Adobe/`; do not move, rewrite, or delete source files.
+
+## Reporting
+
+Use one full batch report per batch:
+
+```text
+BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+```
+
+The Dropbox destination for synced reports is:
+
+```text
+/Pixelbuddha/Products/Adobe Stock Automation
+```
+
+Top-level report sections:
+
+- `step1`
+- `step2`
+- `preview1`
+- `step3`
+- `uploadSync`
+- `errors`
+
+Each process step should update its own section. The top-level `errors` array is only for actionable failures requiring attention. Detailed warnings can stay inside step sections.
+
+## Step 1: Fetch Dropbox Batch
+
+Validate setup without downloading:
+
+```sh
+node scripts/dropbox-products.mjs step1 --dry-run
+```
+
+Run today's Adobe-auto queue:
+
+```sh
+node scripts/dropbox-products.mjs step1
+```
+
+Run a specific date:
+
+```sh
+node scripts/dropbox-products.mjs step1 --date 2026-05-18
+node scripts/dropbox-products.mjs step1 --date 180526
+```
+
+Behavior:
+
+- Read `/Products/auto.json` via Dropbox API.
+- Select records matching today's local date or explicit `--date`.
+- Treat selected records as the Adobe-auto queue.
+- Download each product folder into `./BatchDDMMYY`.
+- Skip `.psd` files over `DROPBOX_MAX_PSD_MB`.
+- Append real-run records to `step1-log.json`; dry runs do not write logs.
+
+Report back selected products, skipped PSDs, final batch folder, and log path. Later steps should consume the local batch unless fresh Dropbox metadata or uploads are explicitly needed.
+
+## Step 2: Prepare Final Listing Folders
+
+Step 2 turns a source `BatchDDMMYY` into final Adobe listing folders. In the current project this was completed manually with report entries; no dedicated Step 2 script is present yet.
+
+Global rules:
+
+- Create `BatchDDMMYY/Adobe/` before processing.
+- Every final listing folder must contain exactly one `.PSDT` and `Thumbnail.jpg`.
+- Check every source PSD used for output is `300 PPI`.
+- If a source PSD is not `300 PPI`, stop that listing and log an actionable error.
+- Final folder names do not contain spaces.
+- Final PSDT filenames do contain spaces.
+- If output names collide, create a copywriter-style title variation preserving the strongest key phrase.
+- Use `.PSDT` extension for final PSD files.
+
+Thumbnail routine:
+
+1. Prefer an image already exactly `2048 x 1424`.
+2. If none exists, try closest filename candidates: `1.jpg`, `adobe.jpg`, `thumbnail.jpg`.
+3. Only use fallback candidates whose aspect ratio matches `2048 x 1424`.
+4. Stretch valid fallback candidates to exactly `2048 x 1424`.
+5. If no valid candidate exists, stop that listing and log an error.
+
+Scenario detection priority:
+
+1. Scenario 2: product `Adobe` folder contains multiple complete listing folders, each with its own PSD.
+2. Scenario 3: horizontal and vertical template PSDs exist while product `Adobe` folders are preview/thumbnail sources.
+3. Scenario 1: one target PSD in the product-titled folder.
+
+Ignore helper PSDs in preview-source, texture, cover, and support folders unless the active scenario explicitly uses them.
+
+## Step 2 Scenarios
+
+Scenario 1: single target PSD.
+
+- Applies when there is no usable Adobe listing structure, no product-level `Adobe` folder, an empty `Adobe` folder, or an `Adobe` folder with JPGs only.
+- Use the single target PSD in the product-titled folder.
+- Thumbnail source priority: product `Adobe` images, then `Preview files/adobe.jpg`, then `Preview files/1.jpg`.
+
+Scenario 2: multiple complete Adobe listing folders.
+
+- Applies when product-level `Adobe` contains multiple inner folders and each inner folder is a complete listing package.
+- Treat each inner folder as one final listing.
+- Find the PSD and thumbnail source inside that same folder.
+- One listing may use the exact source product name; other listings use creative variations.
+
+Scenario 3: horizontal and vertical templates.
+
+- Applies when PSD names include orientation signals like `Horizontal.psd`, `Vertical.psd`, `name_h.psd`, `name_v.psd`, `Portrait.psd`.
+- Horizontal/default listing uses the full original product name.
+- Vertical listing must include `Vertical` or `Portrait`.
+- Match vague preview folders by labels, layout clues, visual content, or existing thumbnail identity.
+
+## Step 3A: Build Preview1
+
+After Step 2 creates final listing folders, generate `Preview1.jpg`:
+
+```sh
+python3 scripts/build-preview-listings.py BatchDDMMYY --dry-run
+python3 scripts/build-preview-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+```
+
+`Preview1.jpg` rules:
+
+- Canvas width: `2048px`.
+- Maximum canvas height: `6000px`.
+- Background: white.
+- Gutter: `10px`.
+- JPEG quality: `60`.
+- Use numbered JPG files only.
+- Ignore `fp.jpg`, `t.jpg`, `thumbnail.jpg`, and `adobe.jpg` for the grid.
+- Use no more than 6 numbered images.
+- First feature image should stay full-width.
+- Use automatic image stats and predictable overrides to improve contrast/rhythm.
+- If the grid would exceed `6000px`, remove lower-priority images from the end and log the selection note.
+
+Default grid schemas:
+
+```text
+2 images: 1-1
+3 images: 1-1-1
+4 images: 1-1-1-1
+5 images: 1-2-1-1
+6 images: 1-2-1-2
+```
+
+The script may use `Adobe` preview images, nested `Adobe` variant folders, or `Preview files` fallback. If final thumbnails already exist, it can match variant source folders to final listings by thumbnail digest.
+
+## Step 3B: ZIP Final Listings
+
+After every listing has `.PSDT`, `Thumbnail.jpg`, and `Preview1.jpg`, ZIP final folders:
+
+```sh
+python3 scripts/zip-final-listings.py BatchDDMMYY --dry-run --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+python3 scripts/zip-final-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+```
+
+ZIP rules:
+
+- Create one ZIP per listing folder inside `BatchDDMMYY/Adobe/`.
+- Archive should include the listing folder itself, not loose files.
+- Exclude `.DS_Store`.
+- Do not include reports inside listing ZIPs.
+- Do not include other ZIPs inside listing ZIPs.
+- If a listing is missing `.PSDT`, `Thumbnail.jpg`, or `Preview1.jpg`, treat as hard failure and do not create that ZIP.
+
+## Current Reference Cases
+
+Observed successful `Batch220526` outputs:
+
+- `PencilSketchPhotoEffect`
+- `RetroPapersOverlayKit`
+- `DamagedScannerEffect`
+- `VerticalDamagedScannerEffect`
+
+Observed successful `Batch180526` Step 2 outputs:
+
+- `ClassicCopyScanPhotoEffect`
+- `GrainCopyScanPhotoEffect`
+- `HighContrastCopyScanPhotoEffect`
+- `WashedCopyScanPhotoEffect`
+- `MetalWaterBottleMockup`
+- `SmearedHalftonePhotoEffect`
+
+These examples encode important naming behavior: source names keep their strongest key phrase, vertical variants include `Vertical`, and multi-listing products use creative title variations rather than mechanical suffixes.
+
+## Step 4: Metadata and CSV Handoff
+
+Step 4 is expected to edit listing metadata and one or more CSV files. The exact CSV schema, destination platform requirements, and source-of-truth metadata file are not present in the current artifacts. Therefore:
+
+- Inspect any provided CSV/template with a real CSV parser.
+- Preserve original column order, delimiter, quoting style, encoding, and line endings where practical.
+- Do not invent required columns; infer only from an existing template or ask for the missing schema.
+- Treat listing folder names, PSDT filenames, ZIP names, product IDs, and automation reports as authoritative local inputs.
+- Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
+- Validate that each CSV row maps to an existing listing ZIP and required files.
+- Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
+- Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under a future `metadataCsv` or `step4` section.
+- Report every row-level failure with product/listing, CSV row number if known, output path, and message.
+
+Likely Step 4 inputs to request or discover:
+
+- Official Adobe Stock CSV template or existing CSV to edit.
+- Required metadata columns and maximum lengths.
+- Category/taxonomy rules.
+- Keyword count/order rules.
+- Whether titles/descriptions should be derived from product names, source metadata, or a separate copy deck.
+- Final upload/sync destination.
+
+## Validation Checklist
+
+Before declaring a batch ready:
+
+```sh
+find BatchDDMMYY/Adobe -maxdepth 2 -type f | sort
+python3 scripts/build-preview-listings.py BatchDDMMYY --dry-run
+python3 scripts/zip-final-listings.py BatchDDMMYY --dry-run --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+```
+
+Check:
+
+- Each listing folder has one `.PSDT`, `Thumbnail.jpg`, and `Preview1.jpg`.
+- Each `Thumbnail.jpg` is `2048 x 1424`.
+- Each `Preview1.jpg` is `2048px` wide and at most `6000px` tall.
+- ZIP archives contain the folder and exactly the required files.
+- Top-level report `errors` is empty or contains only unresolved actionable failures.
+- Source product folders remain unchanged.

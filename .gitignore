@@ -1,0 +1,12 @@
+.env
+.DS_Store
+Batch*/
+step1-log.json
+*.pyc
+__pycache__/
+
+# Generated Adobe Stock outputs and local reports.
+*.zip
+*.PSDT
+*-automation-report.json
+*-preview1-report.json
