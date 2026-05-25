@@ -5,7 +5,7 @@ description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh Codex in
 
 # Pixelbuddha Adobe Stock Automation
 
-Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean Codex environment, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates final ZIPs, and keeps an auditable batch report. Step 4 metadata and CSV work is expected next, but the exact CSV schema is not present in the current artifacts, so do not invent columns without a template or source CSV.
+Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean Codex environment, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates final ZIPs, and keeps an auditable batch report. For Step 4 metadata and CSV work, read `references/metadata-csv.md` before generating or editing metadata rows.
 
 ## Fresh Codex Setup
 
@@ -296,7 +296,13 @@ These examples encode important naming behavior: source names keep their stronge
 
 ## Step 4: Metadata and CSV Handoff
 
-Step 4 is expected to edit listing metadata and one or more CSV files. The exact CSV schema, destination platform requirements, and source-of-truth metadata file are not present in the current artifacts. Therefore:
+Before generating or editing Adobe Stock metadata CSV files, read:
+
+```text
+references/metadata-csv.md
+```
+
+Core rules:
 
 - Inspect any provided CSV/template with a real CSV parser.
 - Preserve original column order, delimiter, quoting style, encoding, and line endings where practical.
@@ -307,15 +313,6 @@ Step 4 is expected to edit listing metadata and one or more CSV files. The exact
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
 - Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under a future `metadataCsv` or `step4` section.
 - Report every row-level failure with product/listing, CSV row number if known, output path, and message.
-
-Likely Step 4 inputs to request or discover:
-
-- Official Adobe Stock CSV template or existing CSV to edit.
-- Required metadata columns and maximum lengths.
-- Category/taxonomy rules.
-- Keyword count/order rules.
-- Whether titles/descriptions should be derived from product names, source metadata, or a separate copy deck.
-- Final upload/sync destination.
 
 ## Validation Checklist
 
