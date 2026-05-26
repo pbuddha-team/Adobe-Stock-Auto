@@ -1,11 +1,12 @@
 # Step 4 Metadata and CSV
 
-Use this reference when creating or editing Adobe Stock metadata CSV files for Pixelbuddha template batches. It is based on Adobe's current contributor guidance plus one prior Pixelbuddha template metadata CSV example.
+Use this reference when creating or editing Adobe Stock metadata CSV files for Pixelbuddha template batches. It is based on Adobe's current contributor guidance, the team-provided AI metadata research, and one prior Pixelbuddha template metadata CSV example.
 
 Official sources:
 
 - Adobe HelpX: `https://helpx.adobe.com/stock/contributor/help/artist-hub-migration/maximize-metadata-to-get-discovered.html`
 - Adobe Stock Metadata Guide PDF: `https://stock.adobe.com/pages/artisthub/pdf/2023-adobe-stock-metadata-guide.pdf`
+- Team research source of truth: `references/adobe-stock-metadata-guidelines-ai.md`
 
 ## CSV Shape
 
@@ -67,11 +68,11 @@ Do not package ZIPs before this mapping is final. Final ZIP packaging should use
 
 ## Adobe Metadata Rules
 
-Apply these rules unless a team house-style decision overrides them:
+Apply these rules for generated titles, filenames, and keywords:
 
 - Write metadata in one language per submission.
 - Make titles concise, natural, factual, and searchable.
-- Adobe suggests titles around 70 characters; longer titles may be shortened during submission.
+- Adobe allows up to 200 title characters, but use 70-90 characters as the normal working range so titles include useful search terms without becoming bloated.
 - If a word is important enough for the title, include it in the keywords, preferably in the first 10.
 - Order keywords by importance. The first 10 keywords carry the most search weight.
 - Adobe allows up to 49 keywords; their public guidance says 15-35 strong keywords are often enough.
@@ -115,41 +116,61 @@ psd, Photoshop, mockup, mock up, product, scene, showcase, photography, insert, 
 
 Avoid blindly copying this tail if the keyword cap must be strictly enforced; prioritize top-ten relevance and remove duplicate or low-value terms first.
 
-## Title Pattern
+## Title Policy
 
-Prior CSV title pattern:
+Write titles from scratch for Step 4. Do not preserve the prior CSV's en-dash/ampersand/`(PSD)` pattern as house style. Use Adobe-aligned, natural titles based on the initial product title and the actual final listing.
+
+The initial product title is the primary source for:
+
+- Product category: `mockup`, `photo effect`, `text effect`, `graphics template`, `overlay`, or another explicit template class.
+- Core product phrase: the strongest buyer-search phrase in the original name.
+- Distinctive style/effect/material words.
+- Variant intent when present, such as horizontal, vertical, poster, album cover, social media, logo, branding, or typography.
+
+Title composition:
 
 ```text
-Product Type – Distinctive Attribute for Use Case & Use Case (PSD)
+[Specific style/effect/material] + [template category] + [main buyer use case or context]
 ```
 
 Examples:
 
 ```text
-Damaged Scanner Photo Effect – Monochrome for Poster & Social Media (PSD)
-Fade Text Effect – Glowing Typography for Logo, Poster & Branding (PSD)
+Damaged scanner photo effect for poster and social media design
+Pencil sketch photo effect for portrait artwork and print design
+Retro paper overlay graphics template for collage and branding
+Metal water bottle mockup for reusable drinkware branding
+Glowing fade text effect for logo and poster typography
 ```
 
-When adapting current Step 2 titles:
+Title rules:
 
-1. Preserve the strongest product phrase.
-2. Add a factual distinctive effect/material/style word when available.
-3. Add one or two buyer use cases if they genuinely match the template preview.
-4. Add orientation/use-case differences for variants, such as `Poster`, `Album Cover`, or `Social Media`.
-5. Keep the title near 70 characters unless the team confirms the previous longer style should remain.
+1. Preserve the strongest phrase from the initial product title unless it is inaccurate.
+2. Put the concrete category in the title: `mockup`, `photo effect`, `text effect`, or `graphics template`.
+3. Include the key distinctive terms from the product title and preview evidence.
+4. Add a commercial/use-case context only when it is supported by the template.
+5. Use natural language, not comma-separated keyword lists.
+6. Avoid parentheses, decorative separators, brand names, IP names, artist names, character names, camera specs, file-size specs, and style-mimicry phrases such as `in the style of`, `inspired by`, or `influenced by`.
+7. Prefer `and` over `&` in titles.
+8. Avoid technical format labels like `PSD`, `PSDT`, or `Photoshop` in the title unless the portal specifically requires them later.
+9. Keep titles unique across sibling variants. If two listings come from one product, vary the use case or orientation truthfully.
+10. Aim for 70-90 characters, but allow shorter titles when they are complete and commercially clear.
+
+Final portal filenames should be derived from approved Step 4 titles, not from Step 2/Step 3 temporary folder names. Filenames may be compact and filesystem-safe, but they should remain traceable to the approved title and row.
 
 ## Keyword Ordering Process
 
 For each row:
 
-1. Extract the main product class: `photo effect`, `text effect`, `mockup`, `overlay`, etc.
-2. Extract the target use case: `poster design`, `album cover`, `logo`, `branding`, `social media`, etc.
-3. Extract the distinctive look from title/source/previews: `damaged scanner`, `pencil sketch`, `retro papers`, `grain`, `monochrome`, etc.
-4. Build the first 10 keywords from the title and core buyer intent.
-5. Add accurate supporting effect words, style words, and template mechanics.
-6. Remove non-relevant terms, duplicate terms, near-duplicate synonyms, and anything unsupported by the asset.
-7. Vary order across sibling rows so similar assets do not compete with identical metadata.
-8. Validate the final keyword count against the chosen team rule.
+1. Read the initial product title and identify the category: `mockup`, `photo effect`, `text effect`, `graphics template`, `overlay`, etc.
+2. Extract title-critical terms from the approved final title.
+3. Extract the target use case: `poster design`, `album cover`, `logo`, `branding`, `social media`, etc.
+4. Extract the distinctive look from title/source/previews: `damaged scanner`, `pencil sketch`, `retro papers`, `grain`, `monochrome`, etc.
+5. Build the first 10 keywords from the title and core buyer intent.
+6. Add accurate supporting effect words, style words, and template mechanics.
+7. Remove non-relevant terms, duplicate terms, near-duplicate synonyms, and anything unsupported by the asset.
+8. Vary order across sibling rows so similar assets do not compete with identical metadata.
+9. Validate the final keyword count against the chosen team rule.
 
 Recommended top-ten templates:
 
@@ -187,14 +208,13 @@ Before saving or uploading:
 
 ## Open Questions for Q&A
 
-1. Should titles keep the prior house style with en dashes, ampersands, and `(PSD)`, even though Adobe's guide advises avoiding hyphens and parentheses in metadata?
-2. Is `Template Category` mapping confirmed as `22 = photo effects` and `39 = text effects`, or is there an official category table we should store in the repo?
-3. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
-4. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
-5. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-6. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
-7. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-8. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-9. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-10. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-11. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+1. Is `Template Category` mapping confirmed as `22 = photo effects` and `39 = text effects`, or is there an official category table we should store in the repo?
+2. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
+3. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
+4. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
+5. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
+6. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
+7. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+8. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+9. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+10. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
