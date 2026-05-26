@@ -95,7 +95,7 @@ def write_report(batch_dir: Path, results: list[ZipResult], report_path: Path) -
 
     packaging_errors = [
         {
-            "step": "finalPackaging",
+            "stage": "finalPackaging",
             "listing": rel_to_batch(batch_dir, result.listing),
             "output": rel_to_batch(batch_dir, result.zip_path),
             "message": error,
@@ -104,21 +104,54 @@ def write_report(batch_dir: Path, results: list[ZipResult], report_path: Path) -
         for error in result.errors
     ]
     existing_errors = [
-        error for error in existing.get("errors", []) if error.get("step") != "finalPackaging"
+        error
+        for error in existing.get("errors", [])
+        if error.get("stage") != "finalPackaging"
+        and error.get("step") != "finalPackaging"
     ]
+    stages = existing.get("stages", {})
+    stages["finalPackaging"] = {
+        "operation": "zip-final-listings",
+        "status": "completed" if not packaging_errors else "failed",
+        "results": [result_to_log(batch_dir, result) for result in results],
+    }
+    errors = existing_errors + packaging_errors
+    warnings = existing.get("warnings", [])
+    artifacts = existing.get("artifacts", {})
+    artifacts["finalZips"] = [rel_to_batch(batch_dir, result.zip_path) for result in results]
+    summary = existing.get("summary", {})
+    summary.update(
+        {
+            "finalZips": sum(1 for result in results if result.zip_path.exists()),
+            "errors": len(errors),
+            "warnings": len(warnings),
+        }
+    )
 
     report = {
-        **existing,
+        **{
+            key: value
+            for key, value in existing.items()
+            if key not in {"preview1", "step3", "finalPackaging", "metadataCsv"}
+        },
+        "reportVersion": existing.get("reportVersion", "1.0"),
+        "reportType": "pixelbuddha-adobe-stock-batch",
         "batch": batch_dir.name,
-        "reportType": "full-batch-automation",
+        "status": "failed" if errors else existing.get("status", "partial"),
         "dropboxFolder": "/Pixelbuddha/Products/Adobe Stock Automation",
         "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "errors": existing_errors + packaging_errors,
-        "finalPackaging": {
-            "operation": "zip-final-listings",
-            "status": "completed" if not packaging_errors else "failed",
-            "results": [result_to_log(batch_dir, result) for result in results],
+        "paths": {
+            **existing.get("paths", {}),
+            "batchRoot": batch_dir.name,
+            "adobeRoot": "Adobe",
+            "canonicalReport": str(report_path.relative_to(batch_dir)),
         },
+        "summary": summary,
+        "stages": stages,
+        "artifacts": artifacts,
+        "warnings": warnings,
+        "errors": errors,
+        "legacyReportsAbsorbed": existing.get("legacyReportsAbsorbed", []),
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

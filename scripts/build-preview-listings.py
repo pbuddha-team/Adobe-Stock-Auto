@@ -475,7 +475,7 @@ def write_report(batch_dir: Path, results: list[ProductResult], report_path: Pat
 
     preview_errors = [
         {
-            "step": "preview1",
+            "stage": "step3BuildPreview1",
             "product": result.product.name,
             "output": result_to_log(batch_dir, result)["output"],
             "message": error,
@@ -484,22 +484,53 @@ def write_report(batch_dir: Path, results: list[ProductResult], report_path: Pat
         for error in result.errors
     ]
     existing_errors = [
-        error for error in existing.get("errors", []) if error.get("step") != "preview1"
+        error
+        for error in existing.get("errors", [])
+        if error.get("stage") not in {"step3BuildPreview1", "preview1"}
+        and error.get("step") != "preview1"
     ]
+    stages = existing.get("stages", {})
+    stages["step3BuildPreview1"] = {
+        "status": "completed"
+        if not any(result.errors for result in results)
+        else "failed",
+        "results": [result_to_log(batch_dir, result) for result in results],
+    }
+    errors = existing_errors + preview_errors
+    warnings = existing.get("warnings", [])
+    summary = existing.get("summary", {})
+    summary.update(
+        {
+            "sourceProducts": len({result.product.name for result in results}),
+            "errors": len(errors),
+            "warnings": len(warnings),
+        }
+    )
 
     report = {
-        **existing,
+        **{
+            key: value
+            for key, value in existing.items()
+            if key not in {"preview1", "step3", "finalPackaging", "metadataCsv"}
+        },
+        "reportVersion": existing.get("reportVersion", "1.0"),
+        "reportType": "pixelbuddha-adobe-stock-batch",
         "batch": batch_dir.name,
-        "reportType": "full-batch-automation",
+        "status": "failed" if errors else existing.get("status", "partial"),
         "dropboxFolder": "/Pixelbuddha/Products/Adobe Stock Automation",
         "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "errors": existing_errors + preview_errors,
-        "preview1": {
-            "status": "completed"
-            if not any(result.errors for result in results)
-            else "failed",
-            "results": [result_to_log(batch_dir, result) for result in results],
+        "paths": {
+            **existing.get("paths", {}),
+            "batchRoot": batch_dir.name,
+            "adobeRoot": "Adobe",
+            "canonicalReport": str(report_path.relative_to(batch_dir)),
         },
+        "summary": summary,
+        "stages": stages,
+        "artifacts": existing.get("artifacts", {}),
+        "warnings": warnings,
+        "errors": errors,
+        "legacyReportsAbsorbed": existing.get("legacyReportsAbsorbed", []),
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

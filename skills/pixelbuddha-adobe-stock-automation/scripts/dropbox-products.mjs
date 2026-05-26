@@ -655,7 +655,7 @@ function readStep1Log(path) {
   if (!existsSync(path)) {
     return {
       schemaVersion: 1,
-      log: "pixelbuddha-adobe-auto-step1",
+      log: "pixelbuddha-adobe-stock-automation-step1",
       runs: [],
       summary: {
         totalRuns: 0,

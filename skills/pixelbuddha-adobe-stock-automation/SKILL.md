@@ -333,7 +333,7 @@ Core rules:
 - Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
 - Validate that each CSV row maps to an aligned final listing folder, a same-title PSDT, required preview files, and then to a generated ZIP after final packaging.
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
-- Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under a future `metadataCsv` or `step4` section.
+- Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `stages.step4MetadataCsv` and `stages.step4ListingAlignment`.
 - Report every row-level failure with product/listing, CSV row number if known, output path, and message.
 
 ## Validation Checklist

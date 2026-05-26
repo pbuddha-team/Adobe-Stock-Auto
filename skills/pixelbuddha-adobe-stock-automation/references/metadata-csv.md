@@ -119,7 +119,7 @@ Store the completed metadata CSV beside the listing folders by default:
 BatchDDMMYY/Adobe/BatchDDMMYY-metadata.csv
 ```
 
-Record this path in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `step4.csv`.
+Record this path in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `stages.step4MetadataCsv.csv`.
 
 ## Adobe Metadata Rules
 
@@ -170,6 +170,13 @@ psd, Photoshop, mockup, mock up, product, scene, showcase, photography, insert, 
 ```
 
 Do not blindly copy this tail. The current policy is Adobe-aligned: keep the first 10 highly relevant, target 15-35 strong keywords, and never exceed 49. Remove duplicate, near-duplicate, unsupported, or low-value mechanics terms first.
+
+Keyword de-duplication policy:
+
+- Use one spelling for near-duplicates by default. Prefer `mockup` over `mock up`.
+- Use `psd` when a broad format keyword is useful; add `psdt` only when the specific template format is important for the row.
+- Prefer buyer-action terms like `editable`, `customizable`, and `smart object`; do not also add low-value variants such as `edit` or `customize` unless they describe a distinct supported feature.
+- Keep both terms only when search intent is meaningfully different and both are accurate for the file.
 
 ## Title Policy
 
@@ -337,9 +344,8 @@ Before saving or uploading:
 - `Disclaimers` is present when preview photos/design elements are not included.
 - No row contains brand/trademark names, unsupported end-use guesses, offensive terms, or irrelevant terms.
 - CSV quoting is valid after commas, ampersands, en dashes, and parentheses.
-- `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` is updated with a `step4` or `metadataCsv` section summarizing generated rows, warnings, and hard errors.
+- `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` is updated with `stages.step4MetadataCsv` and `stages.step4ListingAlignment`, including generated rows, warnings, and hard errors.
 
 ## Open Questions for Q&A
 
-1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. Should the completed CSV be included in the Dropbox automation report upload folder, or only kept in the local batch folder until final portal submission?
+1. Should the completed CSV be included in the Dropbox automation report upload folder, or only kept in the local batch folder until final portal submission?

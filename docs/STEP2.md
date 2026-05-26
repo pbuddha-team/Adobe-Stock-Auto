@@ -39,21 +39,22 @@ BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
 
 A later automation step uploads or syncs that same file to the Dropbox folder. This preserves a local audit trail even if Dropbox upload fails. Each process step should update its own section rather than creating separate report files.
 
-Top-level report sections:
+Canonical report stages live under the top-level `stages` object:
 
-- `step1`
-- `step2`
-- `preview1`
-- `step4`
+- `step1FetchDropboxBatch`
+- `step2PrepareListingFolders`
+- `step3BuildPreview1`
+- `step4MetadataCsv`
+- `step4ListingAlignment`
 - `finalPackaging`
+- `validation`
 - `uploadSync`
-- `errors`
 
-The top-level `errors` array is a quick hard-failure summary across all steps. Only failures that require action should appear there. Step sections may keep detailed warnings, but warnings should not be duplicated into top-level `errors`.
+The top-level `errors` array is a quick hard-failure summary across all steps. Only unresolved failures that require action should appear there. Non-blocking issues belong in `warnings` and near the relevant stage result.
 
 Any actionable failure should appear in the top-level `errors` array with its step name, product/listing when applicable, output path when known, and message.
 
-The `preview1` section should include:
+The `stages.step3BuildPreview1` section should include:
 
 - Batch name.
 - Product/listing name.
@@ -66,7 +67,7 @@ The `preview1` section should include:
 - Selection note, such as images selected/skipped from a larger source set or rhythm ordering changes.
 - Warnings/errors.
 
-The `finalPackaging` section should include:
+The `stages.finalPackaging` section should include:
 
 - Listing folder path.
 - ZIP path.
@@ -259,20 +260,21 @@ E3974 - Damaged Scanner Effect/
       2.jpg
 ```
 
-Scenario 3 output naming:
+Scenario 3 working output naming:
 
 - Horizontal/default listing uses the full original product name.
 - Vertical listing must include `Vertical` or `Portrait` in the final name.
+- Step 4 later renames these working folders and PSDT files to match the approved metadata title and CSV `Filename`.
 
 Example:
 
 ```text
-BatchDDMMYY/Adobe/DamagedScannerEffect/
-  Damaged Scanner Effect.PSDT
+BatchDDMMYY/Adobe/DamagedScannerPhotoEffectforPosterandSocialMediaDesign/
+  Damaged scanner photo effect for poster and social media design.PSDT
   Thumbnail.jpg
 
-BatchDDMMYY/Adobe/VerticalDamagedScannerEffect/
-  Vertical Damaged Scanner Effect.PSDT
+BatchDDMMYY/Adobe/VerticalDamagedScannerPhotoEffectforPosterandCoverDesign/
+  Vertical damaged scanner photo effect for poster and cover design.PSDT
   Thumbnail.jpg
 ```
 

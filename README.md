@@ -4,19 +4,13 @@ Pixelbuddha automation for Adobe Stock product batches. The repo contains the cu
 
 ## Codex Skill
 
-Primary skill:
+Installable Codex skill:
 
 ```text
 skills/pixelbuddha-adobe-stock-automation/
 ```
 
 The skill is the best entry point for a freshly installed Codex employee environment. It verifies tools, explains credentials, and gives the agent the exact processing rules.
-
-Legacy Step 1-only skill:
-
-```text
-skills/pixelbuddha-adobe-auto-step1/
-```
 
 ## Local Setup
 
@@ -83,20 +77,27 @@ Build Preview1 grids after final listing folders exist:
 python3 scripts/build-preview-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
 ```
 
-Do not ZIP listings immediately after preview generation. Final portal-facing titles and filenames are determined during Step 4 metadata work; final ZIP packaging happens after that mapping is approved.
+Do not ZIP listings immediately after preview generation. Final portal-facing titles and filenames are determined during Step 4 metadata work; Step 4 must also align listing folder names and PSDT names. Final ZIP packaging happens after that mapping is approved.
+
+Package finalized listings:
+
+```sh
+python3 scripts/zip-final-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
+```
 
 ## Documentation
 
-Step 2, Step 3, and Step 4 processing rules live in:
+Step 2 and Step 3 processing notes live in:
 
 ```text
 docs/STEP2.md
 ```
 
-The consolidated corporate skill documentation lives in:
+The consolidated corporate skill documentation and authoritative Step 4/reporting references live in:
 
 ```text
 skills/pixelbuddha-adobe-stock-automation/SKILL.md
+skills/pixelbuddha-adobe-stock-automation/references/
 ```
 
 ## Generated Files

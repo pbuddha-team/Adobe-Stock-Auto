@@ -181,7 +181,7 @@ def select_grid_images(images: list[Path]) -> tuple[list[Path], str | None]:
         selected.append(chosen)
         remaining.remove(chosen)
 
-    selected = sorted(selected, key=natural_key)
+    selected = [selected[0]] + sorted(selected[1:], key=natural_key)
     selected_names = ", ".join(path.name for path in selected)
     skipped_names = ", ".join(path.name for path in images if path not in selected)
     return selected, (
@@ -357,24 +357,44 @@ def output_for_source(
     return output_root / clean_product_name(product_dir)
 
 
+def matching_existing_outputs(product_dir: Path, output_root: Path) -> list[Path]:
+    product_name = clean_product_name(product_dir).lower()
+    if not output_root.is_dir():
+        return []
+    return sorted(
+        [
+            path
+            for path in output_root.iterdir()
+            if path.is_dir() and path.name.lower().endswith(product_name)
+        ],
+        key=lambda path: path.name.lower(),
+    )
+
+
 def prepare_product(
     product_dir: Path,
     output_root: Path,
     digest_map: dict[str, Path],
     source_override: Path | None = None,
+    output_override: Path | None = None,
+    cover_image: Path | None = None,
 ) -> ProductResult:
     if source_override:
         source_dir = source_override
         grid_images = numeric_jpgs(source_dir, recursive=False)
     else:
         source_dir, grid_images = source_for_product(product_dir)
-    output_dir = output_for_source(product_dir, source_dir, output_root, digest_map)
+    output_dir = output_override or output_for_source(
+        product_dir, source_dir, output_root, digest_map
+    )
+    if cover_image:
+        grid_images = [cover_image] + grid_images
     grid_images, selection_note = ordered_grid_images(grid_images, output_dir)
     grid_images, height_note = fit_grid_height(grid_images)
     selection_note = "; ".join(
         note for note in [selection_note, height_note] if note
     ) or None
-    thumbnails = thumbnail_candidates(product_dir, source_dir)
+    thumbnails = [cover_image] if cover_image else thumbnail_candidates(product_dir, source_dir)
     errors = []
     warnings = []
     if not grid_images:
@@ -411,6 +431,23 @@ def prepare_products(
                 for child in variant_dirs
             ]
 
+    source_dir, grid_images = source_for_product(product_dir)
+    if source_dir and grid_images:
+        existing_outputs = matching_existing_outputs(product_dir, output_root)
+        if len(existing_outputs) > 1:
+            return [
+                prepare_product(
+                    product_dir,
+                    output_root,
+                    digest_map,
+                    source_override=source_dir,
+                    output_override=output_dir,
+                    cover_image=output_dir / "Thumbnail.jpg",
+                )
+                for output_dir in existing_outputs
+                if (output_dir / "Thumbnail.jpg").is_file()
+            ]
+
     return [prepare_product(product_dir, output_root, digest_map)]
 
 def result_to_log(batch_dir: Path, result: ProductResult) -> dict:
@@ -438,7 +475,7 @@ def write_report(batch_dir: Path, results: list[ProductResult], report_path: Pat
 
     preview_errors = [
         {
-            "step": "preview1",
+            "stage": "step3BuildPreview1",
             "product": result.product.name,
             "output": result_to_log(batch_dir, result)["output"],
             "message": error,
@@ -447,22 +484,53 @@ def write_report(batch_dir: Path, results: list[ProductResult], report_path: Pat
         for error in result.errors
     ]
     existing_errors = [
-        error for error in existing.get("errors", []) if error.get("step") != "preview1"
+        error
+        for error in existing.get("errors", [])
+        if error.get("stage") not in {"step3BuildPreview1", "preview1"}
+        and error.get("step") != "preview1"
     ]
+    stages = existing.get("stages", {})
+    stages["step3BuildPreview1"] = {
+        "status": "completed"
+        if not any(result.errors for result in results)
+        else "failed",
+        "results": [result_to_log(batch_dir, result) for result in results],
+    }
+    errors = existing_errors + preview_errors
+    warnings = existing.get("warnings", [])
+    summary = existing.get("summary", {})
+    summary.update(
+        {
+            "sourceProducts": len({result.product.name for result in results}),
+            "errors": len(errors),
+            "warnings": len(warnings),
+        }
+    )
 
     report = {
-        **existing,
+        **{
+            key: value
+            for key, value in existing.items()
+            if key not in {"preview1", "step3", "finalPackaging", "metadataCsv"}
+        },
+        "reportVersion": existing.get("reportVersion", "1.0"),
+        "reportType": "pixelbuddha-adobe-stock-batch",
         "batch": batch_dir.name,
-        "reportType": "full-batch-automation",
+        "status": "failed" if errors else existing.get("status", "partial"),
         "dropboxFolder": "/Pixelbuddha/Products/Adobe Stock Automation",
         "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "errors": existing_errors + preview_errors,
-        "preview1": {
-            "status": "completed"
-            if not any(result.errors for result in results)
-            else "failed",
-            "results": [result_to_log(batch_dir, result) for result in results],
+        "paths": {
+            **existing.get("paths", {}),
+            "batchRoot": batch_dir.name,
+            "adobeRoot": "Adobe",
+            "canonicalReport": str(report_path.relative_to(batch_dir)),
         },
+        "summary": summary,
+        "stages": stages,
+        "artifacts": existing.get("artifacts", {}),
+        "warnings": warnings,
+        "errors": errors,
+        "legacyReportsAbsorbed": existing.get("legacyReportsAbsorbed", []),
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
