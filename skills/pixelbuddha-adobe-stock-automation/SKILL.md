@@ -260,7 +260,7 @@ The script may use `Adobe` preview images, nested `Adobe` variant folders, or `P
 
 ## Final Packaging
 
-Final ZIP packaging happens after Step 4 metadata work, not during Step 3. Step 4 determines final titles and CSV `Filename` values, which in turn determine portal-facing ZIP names. Use `zip-final-listings.py` only after that mapping is approved or after the script has been given an explicit filename mapping.
+Final ZIP packaging happens after Step 4 metadata work, not during Step 3. Step 4 determines final titles and CSV `Filename` values, then aligns the final listing folders and PSDT filenames to that approved mapping. Use `zip-final-listings.py` only after folder alignment is complete.
 
 ZIP rules:
 
@@ -276,10 +276,10 @@ ZIP rules:
 
 Observed successful `Batch220526` outputs:
 
-- `PencilSketchPhotoEffect`
-- `RetroPapersOverlayKit`
-- `DamagedScannerEffect`
-- `VerticalDamagedScannerEffect`
+- `DamagedScannerPhotoEffectforPosterandSocialMediaDesign`
+- `PencilSketchPhotoEffectforPortraitArtworkandPrintDesign`
+- `RetroPaperOverlayGraphicsTemplateforCollageandBrandingDesign`
+- `VerticalDamagedScannerPhotoEffectforPosterandCoverDesign`
 
 Observed successful `Batch180526` Step 2 outputs:
 
@@ -307,8 +307,10 @@ Core rules:
 - Do not invent required columns; infer only from an existing template or ask for the missing schema.
 - Treat listing folder names, PSDT filenames, product IDs, and automation reports as authoritative local inputs.
 - Determine final portal-facing titles and CSV `Filename` values before packaging ZIPs.
+- Rename each final listing folder to the approved CSV `Filename` stem before packaging.
+- Rename the single PSDT inside each final listing folder to the approved Step 4 title plus `.PSDT`.
 - Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
-- Validate that each CSV row maps to an existing final listing folder with required files, then to a generated ZIP after final packaging.
+- Validate that each CSV row maps to an aligned final listing folder, a same-title PSDT, required preview files, and then to a generated ZIP after final packaging.
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
 - Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under a future `metadataCsv` or `step4` section.
 - Report every row-level failure with product/listing, CSV row number if known, output path, and message.

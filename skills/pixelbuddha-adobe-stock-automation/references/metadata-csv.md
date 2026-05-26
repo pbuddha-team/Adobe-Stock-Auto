@@ -213,6 +213,25 @@ Title rules:
 
 Final portal filenames should be derived from approved Step 4 titles, not from Step 2/Step 3 temporary folder names. Filenames may be compact and filesystem-safe, but they should remain traceable to the approved title and row.
 
+After titles and `Filename` values are approved, align the local listing package before final ZIP packaging:
+
+1. Rename the final listing folder to the approved `Filename` stem.
+2. Rename the single PSDT inside that folder to the exact approved `Title` plus `.PSDT`.
+3. Keep `Thumbnail.jpg` and `Preview1.jpg` inside the renamed folder.
+4. Create the final ZIP from the renamed folder, using the exact CSV `Filename`.
+
+Example:
+
+```text
+Filename: DamagedScannerPhotoEffectforPosterandSocialMediaDesign.zip
+Title: Damaged scanner photo effect for poster and social media design
+
+Adobe/DamagedScannerPhotoEffectforPosterandSocialMediaDesign/
+  Damaged scanner photo effect for poster and social media design.PSDT
+  Thumbnail.jpg
+  Preview1.jpg
+```
+
 ## Keyword Ordering Process
 
 For each row:
@@ -306,6 +325,8 @@ Before saving or uploading:
 - Header row and instruction row are preserved unless intentionally changed.
 - Every data row has 8 fields.
 - Every `Filename` maps to an existing final listing folder and a planned final ZIP path.
+- Every final listing folder has been renamed to its approved `Filename` stem.
+- The PSDT inside every final listing folder has been renamed to the approved `Title` plus `.PSDT`.
 - `Title` is non-empty and unique enough across the batch.
 - Important title words appear in the first 10 keywords.
 - Keyword count is 15-35 by default and never above 49.
