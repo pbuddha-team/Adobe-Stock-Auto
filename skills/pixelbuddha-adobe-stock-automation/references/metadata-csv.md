@@ -128,6 +128,7 @@ Apply these rules for generated titles, filenames, and keywords:
 - Avoid copying identical titles and keyword orders across similar files; diversify per listing.
 - For localized content, include city/country keywords when truly relevant.
 - Pixelbuddha scope is Adobe Stock template PSDT submissions, not stock photo submissions. Do not add stock-photo people-presence keywords such as `no people` or `nobody` by default.
+- Generative-AI flags, fictional people/property flags, model releases, and property releases are out of scope for the entire Pixelbuddha automation. Do not add AI labels, release notes, or `generative AI` terms to CSV metadata, titles, or keywords.
 
 ## Pixelbuddha Metadata Pattern
 
@@ -310,6 +311,5 @@ Before saving or uploading:
 ## Open Questions for Q&A
 
 1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-3. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-4. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+2. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+3. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
