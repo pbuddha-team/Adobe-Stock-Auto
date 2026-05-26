@@ -127,12 +127,11 @@ Apply these rules for generated titles, filenames, and keywords:
 - Avoid irrelevant background objects and unnecessary synonym stuffing.
 - Avoid copying identical titles and keyword orders across similar files; diversify per listing.
 - For localized content, include city/country keywords when truly relevant.
-- For people or demographic metadata, use only factual information from releases and never guess.
-- If no people appear in image-like content, Adobe suggests `no people` or `nobody`; confirm whether Pixelbuddha template previews should use these.
+- Pixelbuddha scope is Adobe Stock template PSDT submissions, not stock photo submissions. Do not add stock-photo people-presence keywords such as `no people` or `nobody` by default.
 
 ## Pixelbuddha Metadata Pattern
 
-The prior CSV uses repeatable template-product metadata, not literal photo-scene metadata. Treat it as historical reference, not as a target density rule. It prioritizes product type and buyer use cases:
+The prior CSV uses repeatable template-product metadata, not literal photo-scene metadata. Treat it as historical reference, not as a target density rule. Pixelbuddha submits template PSDT files in official template categories, so metadata should prioritize editable product type and buyer use cases:
 
 Photo-effect rows commonly start keywords with:
 
@@ -254,9 +253,8 @@ Before saving or uploading:
 ## Open Questions for Q&A
 
 1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
-3. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-4. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-5. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-6. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-7. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+2. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
+3. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+4. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+5. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+6. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
