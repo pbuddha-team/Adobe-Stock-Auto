@@ -37,7 +37,7 @@ Observed prior-batch defaults:
 - `Colorspace`: `RGB`
 - `Disclaimers`: `Photos or design elements shown in the preview are for display only and are not included in the downloaded file`
 - `Number of Pages or Options`: observed values include `1 design option`, `2 design options`, `3 design options`, and `4 design options`.
-- `Template Size`: written as `4500 x 3000 pixels` or `3000 x 4500 pixels` in the prior CSV.
+- `Template Size`: written as `4500 x 3000 pixels` or `3000 x 4500 pixels`.
 
 Template category codes come from page 2 / `Instructions` sheet of the Adobe Stock template metadata workbook. Do not infer category numbers from old CSV rows when the workbook table applies.
 
@@ -267,6 +267,26 @@ Edit Content + numeric folder with 4 visible-choice children -> 5 design options
 
 Record the detected signals in the Step 4 report so questionable counts can be audited later, but do not block CSV generation solely because this value may be imperfect.
 
+## Template Size
+
+Derive `Template Size` from the final PSDT metadata, not from preview images, thumbnails, source folder names, or Step 3 `Preview1.jpg`.
+
+Read the PSDT canvas width and height from the Photoshop file header and format the CSV value as:
+
+```text
+{width} x {height} pixels
+```
+
+Examples:
+
+```text
+4500 x 3000 pixels
+3000 x 4500 pixels
+5000 x 5000 pixels
+```
+
+For horizontal and vertical variants, each CSV row uses that final listing's own PSDT dimensions. Record the parsed dimensions in the Step 4 report.
+
 ## Validation Checklist
 
 Before saving or uploading:
@@ -279,7 +299,7 @@ Before saving or uploading:
 - Important title words appear in the first 10 keywords.
 - Keyword count is 15-35 by default and never above 49.
 - `Template Category` uses an approved code.
-- `Template Size` matches the PSD/template dimensions.
+- `Template Size` matches the final PSDT canvas dimensions parsed from metadata.
 - `Colorspace` is an allowed portal value.
 - `Number of Pages or Options` is derived from PSDT signals and its detected signals are recorded in the Step 4 report.
 - `Disclaimers` is present when preview photos/design elements are not included.
@@ -290,7 +310,6 @@ Before saving or uploading:
 ## Open Questions for Q&A
 
 1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-3. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-4. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-5. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+2. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+3. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+4. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
