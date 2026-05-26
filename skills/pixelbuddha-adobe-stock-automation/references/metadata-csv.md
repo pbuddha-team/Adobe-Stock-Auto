@@ -120,7 +120,7 @@ Apply these rules for generated titles, filenames, and keywords:
 - Adobe allows up to 200 title characters, but use 70-90 characters as the normal working range so titles include useful search terms without becoming bloated.
 - If a word is important enough for the title, include it in the keywords, preferably in the first 10.
 - Order keywords by importance. The first 10 keywords carry the most search weight.
-- Adobe allows up to 49 keywords; their public guidance says 15-35 strong keywords are often enough.
+- Enforce Adobe's 49-keyword maximum strictly. The target range is 15-35 strong, relevant keywords; exceed 35 only when every extra keyword is specific, accurate, and useful.
 - Use accurate, literal descriptors first. Add conceptual/use-case terms only when relevant.
 - Do not keyword spam or bulk-apply metadata without adjusting each asset.
 - Avoid brand names, trademarks, product names, people names, offensive terms, camera specs, and file-size information.
@@ -132,7 +132,7 @@ Apply these rules for generated titles, filenames, and keywords:
 
 ## Pixelbuddha Metadata Pattern
 
-The prior CSV uses repeatable template-product metadata, not literal photo-scene metadata. It prioritizes product type and buyer use cases:
+The prior CSV uses repeatable template-product metadata, not literal photo-scene metadata. Treat it as historical reference, not as a target density rule. It prioritizes product type and buyer use cases:
 
 Photo-effect rows commonly start keywords with:
 
@@ -159,7 +159,7 @@ Rows usually end with reusable template/mechanics terms:
 psd, Photoshop, mockup, mock up, product, scene, showcase, photography, insert, image, place, psdt, smart object, layered, customizable, editable, customize, edit, 4500 x 3000 px, rgb
 ```
 
-Avoid blindly copying this tail if the keyword cap must be strictly enforced; prioritize top-ten relevance and remove duplicate or low-value terms first.
+Do not blindly copy this tail. The current policy is Adobe-aligned: keep the first 10 highly relevant, target 15-35 strong keywords, and never exceed 49. Remove duplicate, near-duplicate, unsupported, or low-value mechanics terms first.
 
 ## Title Policy
 
@@ -215,7 +215,7 @@ For each row:
 6. Add accurate supporting effect words, style words, and template mechanics.
 7. Remove non-relevant terms, duplicate terms, near-duplicate synonyms, and anything unsupported by the asset.
 8. Vary order across sibling rows so similar assets do not compete with identical metadata.
-9. Validate the final keyword count against the chosen team rule.
+9. Validate the final keyword count: target 15-35 strong keywords and never exceed 49.
 
 Recommended top-ten templates:
 
@@ -241,7 +241,7 @@ Before saving or uploading:
 - Every `Filename` maps to an existing final listing folder and a planned final ZIP path.
 - `Title` is non-empty and unique enough across the batch.
 - Important title words appear in the first 10 keywords.
-- Keyword count follows the agreed rule.
+- Keyword count is 15-35 by default and never above 49.
 - `Template Category` uses an approved code.
 - `Template Size` matches the PSD/template dimensions.
 - `Colorspace` is an allowed portal value.
@@ -253,12 +253,10 @@ Before saving or uploading:
 
 ## Open Questions for Q&A
 
-1. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
-2. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
-3. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-4. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
-5. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-6. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-7. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-8. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-9. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
+2. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
+3. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
+4. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+5. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+6. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+7. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
