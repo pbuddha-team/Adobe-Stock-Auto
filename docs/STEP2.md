@@ -15,7 +15,7 @@ Listing Name.PSDT
 Thumbnail.jpg
 ```
 
-`Preview1.jpg` generation and ZIP packing are Step 3 operations and are intentionally out of scope for Step 2.
+`Preview1.jpg` generation is a Step 3 operation and is intentionally out of scope for Step 2. ZIP packing is no longer part of Step 3; final ZIP filenames depend on Step 4 metadata decisions.
 
 ## Automation Reports
 
@@ -44,7 +44,8 @@ Top-level report sections:
 - `step1`
 - `step2`
 - `preview1`
-- `step3`
+- `step4`
+- `finalPackaging`
 - `uploadSync`
 - `errors`
 
@@ -65,7 +66,7 @@ The `preview1` section should include:
 - Selection note, such as images selected/skipped from a larger source set or rhythm ordering changes.
 - Warnings/errors.
 
-The `step3` section should include:
+The `finalPackaging` section should include:
 
 - Listing folder path.
 - ZIP path.
@@ -398,9 +399,11 @@ These parts still require visual judgment or future rules:
 - Matching vague variant folders such as `1` and `2` to horizontal, vertical, portrait, or other output names when thumbnails are not already present or cannot be matched by image identity.
 - Handling products with more than 6 strong numbered preview images still requires visual judgment. The script may skip weak/repetitive images, and it may remove lower-priority images to keep `Preview1.jpg` under `6000px`, but close calls should be checked manually.
 
-## Step 3 Final ZIP Packing
+## Final ZIP Packing
 
-After `Preview1.jpg` files are created, ZIP each final listing folder inside:
+Do not ZIP final listing folders immediately after Step 3. Step 4 determines the final listing titles, CSV `Filename` values, and portal-facing ZIP names. Only after that mapping is approved should the automation package ZIP files.
+
+After Step 4 metadata is complete, create ZIPs inside:
 
 ```text
 BatchDDMMYY/Adobe/
@@ -416,10 +419,10 @@ Preview1.jpg
 Create one ZIP per final listing folder:
 
 ```text
-BatchDDMMYY/Adobe/ListingFolderName.zip
+BatchDDMMYY/Adobe/PortalFacingFilename.zip
 ```
 
-The ZIP archive should include the listing folder itself, not just loose files. Example archive contents:
+The ZIP archive should include the listing folder itself, not just loose files. If Step 4 renames the portal-facing ZIP, keep the folder contents internally consistent with the approved final title. Example archive contents:
 
 ```text
 ListingFolderName/
@@ -435,4 +438,4 @@ ZIP rules:
 - Do not include batch reports inside listing ZIPs.
 - Do not include other ZIP files inside listing ZIPs.
 - If a listing folder is missing `.PSDT`, `Thumbnail.jpg`, or `Preview1.jpg`, treat it as a hard failure and do not create that ZIP.
-- Update the local full batch report at `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json`.
+- Update the local full batch report at `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `finalPackaging`.

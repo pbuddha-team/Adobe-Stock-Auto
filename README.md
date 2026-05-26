@@ -1,6 +1,6 @@
 # Adobe Stock Auto
 
-Pixelbuddha automation for Adobe Stock product batches. The repo contains the current workflow scripts plus an installable Codex skill that documents the fresh-machine setup, Dropbox fetch, final listing preparation, preview generation, ZIP packing, reporting, and the metadata/CSV handoff.
+Pixelbuddha automation for Adobe Stock product batches. The repo contains the current workflow scripts plus an installable Codex skill that documents the fresh-machine setup, Dropbox fetch, final listing preparation, preview generation, metadata/CSV creation, final naming, packaging, and reporting.
 
 ## Codex Skill
 
@@ -83,15 +83,11 @@ Build Preview1 grids after final listing folders exist:
 python3 scripts/build-preview-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
 ```
 
-ZIP final listing folders:
-
-```sh
-python3 scripts/zip-final-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
-```
+Do not ZIP listings immediately after preview generation. Final portal-facing titles and filenames are determined during Step 4 metadata work; final ZIP packaging happens after that mapping is approved.
 
 ## Documentation
 
-Step 2 and Step 3 processing rules live in:
+Step 2, Step 3, and Step 4 processing rules live in:
 
 ```text
 docs/STEP2.md

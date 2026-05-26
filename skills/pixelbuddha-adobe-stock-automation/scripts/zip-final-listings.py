@@ -93,9 +93,9 @@ def write_report(batch_dir: Path, results: list[ZipResult], report_path: Path) -
     if report_path.exists():
         existing = json.loads(report_path.read_text(encoding="utf-8"))
 
-    step3_errors = [
+    packaging_errors = [
         {
-            "step": "step3",
+            "step": "finalPackaging",
             "listing": rel_to_batch(batch_dir, result.listing),
             "output": rel_to_batch(batch_dir, result.zip_path),
             "message": error,
@@ -104,7 +104,7 @@ def write_report(batch_dir: Path, results: list[ZipResult], report_path: Path) -
         for error in result.errors
     ]
     existing_errors = [
-        error for error in existing.get("errors", []) if error.get("step") != "step3"
+        error for error in existing.get("errors", []) if error.get("step") != "finalPackaging"
     ]
 
     report = {
@@ -113,10 +113,10 @@ def write_report(batch_dir: Path, results: list[ZipResult], report_path: Path) -
         "reportType": "full-batch-automation",
         "dropboxFolder": "/Pixelbuddha/Products/Adobe Stock Automation",
         "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "errors": existing_errors + step3_errors,
-        "step3": {
+        "errors": existing_errors + packaging_errors,
+        "finalPackaging": {
             "operation": "zip-final-listings",
-            "status": "completed" if not step3_errors else "failed",
+            "status": "completed" if not packaging_errors else "failed",
             "results": [result_to_log(batch_dir, result) for result in results],
         },
     }
@@ -148,7 +148,7 @@ def run(batch_dir: Path, dry_run: bool, report_path: Path | None) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="ZIP final Adobe listing folders.")
+    parser = argparse.ArgumentParser(description="ZIP final Adobe listing folders after Step 4 metadata naming.")
     parser.add_argument("batch", type=Path, help="Batch folder, e.g. Batch220526")
     parser.add_argument("--dry-run", action="store_true", help="Report only; write no ZIPs.")
     parser.add_argument("--report", type=Path, help="Update the full batch JSON report.")

@@ -44,26 +44,26 @@ Treat category code mappings as inferred from the example until Adobe's official
 
 ## Row Mapping
 
-Every CSV data row should map to a final ZIP in:
+Every CSV data row should first map to a final listing folder in:
 
 ```text
-BatchDDMMYY/Adobe/ListingFolderName.zip
+BatchDDMMYY/Adobe/ListingFolderName/
 ```
 
-The `Filename` cell should be the ZIP filename expected by the portal. In the prior CSV, filenames are compact marketing names with no spaces, an en dash between name and use-case phrase, and `(PSD).zip` at the end, for example:
+Step 4 determines the final title and the portal-facing ZIP filename. The `Filename` cell should be the ZIP filename expected by the portal. In the prior CSV, filenames are compact marketing names with no spaces, an en dash between name and use-case phrase, and `(PSD).zip` at the end, for example:
 
 ```text
 DamagedScannerPhotoEffect–MonochromeforPoster&SocialMedia(PSD).zip
 ```
 
-This does not exactly match current Step 3 ZIP filenames, which are simple folder names such as:
+This intentionally does not have to match Step 2/Step 3 working folder names such as:
 
 ```text
-DamagedScannerEffect.zip
-VerticalDamagedScannerEffect.zip
+DamagedScannerEffect/
+VerticalDamagedScannerEffect/
 ```
 
-Before generating CSV rows, resolve whether Step 4 should rename ZIPs, use current ZIP names, or create portal-facing duplicate ZIP names.
+Do not package ZIPs before this mapping is final. Final ZIP packaging should use the Step 4 `Filename` values, not the temporary listing folder names.
 
 ## Adobe Metadata Rules
 
@@ -172,7 +172,7 @@ Before saving or uploading:
 - CSV parses with a real CSV parser.
 - Header row and instruction row are preserved unless intentionally changed.
 - Every data row has 8 fields.
-- Every `Filename` maps to an existing ZIP or an explicit planned ZIP rename.
+- Every `Filename` maps to an existing final listing folder and a planned final ZIP path.
 - `Title` is non-empty and unique enough across the batch.
 - Important title words appear in the first 10 keywords.
 - Keyword count follows the agreed rule.
@@ -187,16 +187,14 @@ Before saving or uploading:
 
 ## Open Questions for Q&A
 
-1. Should Step 4 use the current ZIP filenames from Step 3, or should it rename/copy ZIPs to portal-facing filenames like the previous CSV?
-2. Should titles keep the prior house style with en dashes, ampersands, and `(PSD)`, even though Adobe's guide advises avoiding hyphens and parentheses in metadata?
-3. Is `Template Category` mapping confirmed as `22 = photo effects` and `39 = text effects`, or is there an official category table we should store in the repo?
-4. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
-5. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
-6. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-7. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
-8. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-9. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-10. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-11. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-12. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
-
+1. Should titles keep the prior house style with en dashes, ampersands, and `(PSD)`, even though Adobe's guide advises avoiding hyphens and parentheses in metadata?
+2. Is `Template Category` mapping confirmed as `22 = photo effects` and `39 = text effects`, or is there an official category table we should store in the repo?
+3. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
+4. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
+5. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
+6. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
+7. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
+8. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+9. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+10. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+11. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?

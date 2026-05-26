@@ -1,11 +1,11 @@
 ---
 name: pixelbuddha-adobe-stock-automation
-description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh Codex install: verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, ZIP listings, maintain batch automation reports, and continue into metadata/CSV work. Use when the user asks to run, document, debug, or extend Pixelbuddha Adobe Stock automation steps."
+description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh Codex install: verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain batch automation reports. Use when the user asks to run, document, debug, or extend Pixelbuddha Adobe Stock automation steps."
 ---
 
 # Pixelbuddha Adobe Stock Automation
 
-Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean Codex environment, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates final ZIPs, and keeps an auditable batch report. For Step 4 metadata and CSV work, read `references/metadata-csv.md` before generating or editing metadata rows.
+Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean Codex environment, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates metadata CSV rows, determines final portal filenames, and keeps an auditable batch report. For Step 4 metadata and CSV work, read `references/metadata-csv.md` before generating or editing metadata rows.
 
 ## Fresh Codex Setup
 
@@ -105,9 +105,10 @@ BatchDDMMYY/Adobe/
     Listing Name.PSDT
     Thumbnail.jpg
     Preview1.jpg
-  ListingFolderName.zip
   BatchDDMMYY-automation-report.json
 ```
+
+Do not ZIP listing folders in Step 3. Final ZIP names are decided in Step 4 after metadata titles and CSV `Filename` values are finalized.
 
 Source product folders must stay intact. Copy files into `BatchDDMMYY/Adobe/`; do not move, rewrite, or delete source files.
 
@@ -130,7 +131,8 @@ Top-level report sections:
 - `step1`
 - `step2`
 - `preview1`
-- `step3`
+- `step4`
+- `finalPackaging`
 - `uploadSync`
 - `errors`
 
@@ -256,23 +258,19 @@ Default grid schemas:
 
 The script may use `Adobe` preview images, nested `Adobe` variant folders, or `Preview files` fallback. If final thumbnails already exist, it can match variant source folders to final listings by thumbnail digest.
 
-## Step 3B: ZIP Final Listings
+## Final Packaging
 
-After every listing has `.PSDT`, `Thumbnail.jpg`, and `Preview1.jpg`, ZIP final folders:
-
-```sh
-python3 scripts/zip-final-listings.py BatchDDMMYY --dry-run --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
-python3 scripts/zip-final-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
-```
+Final ZIP packaging happens after Step 4 metadata work, not during Step 3. Step 4 determines final titles and CSV `Filename` values, which in turn determine portal-facing ZIP names. Use `zip-final-listings.py` only after that mapping is approved or after the script has been given an explicit filename mapping.
 
 ZIP rules:
 
-- Create one ZIP per listing folder inside `BatchDDMMYY/Adobe/`.
+- Create one ZIP per approved metadata row.
 - Archive should include the listing folder itself, not loose files.
 - Exclude `.DS_Store`.
 - Do not include reports inside listing ZIPs.
 - Do not include other ZIPs inside listing ZIPs.
 - If a listing is missing `.PSDT`, `Thumbnail.jpg`, or `Preview1.jpg`, treat as hard failure and do not create that ZIP.
+- Write packaging results under `finalPackaging` in the batch report.
 
 ## Current Reference Cases
 
@@ -307,9 +305,10 @@ Core rules:
 - Inspect any provided CSV/template with a real CSV parser.
 - Preserve original column order, delimiter, quoting style, encoding, and line endings where practical.
 - Do not invent required columns; infer only from an existing template or ask for the missing schema.
-- Treat listing folder names, PSDT filenames, ZIP names, product IDs, and automation reports as authoritative local inputs.
+- Treat listing folder names, PSDT filenames, product IDs, and automation reports as authoritative local inputs.
+- Determine final portal-facing titles and CSV `Filename` values before packaging ZIPs.
 - Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
-- Validate that each CSV row maps to an existing listing ZIP and required files.
+- Validate that each CSV row maps to an existing final listing folder with required files, then to a generated ZIP after final packaging.
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
 - Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under a future `metadataCsv` or `step4` section.
 - Report every row-level failure with product/listing, CSV row number if known, output path, and message.
@@ -321,7 +320,6 @@ Before declaring a batch ready:
 ```sh
 find BatchDDMMYY/Adobe -maxdepth 2 -type f | sort
 python3 scripts/build-preview-listings.py BatchDDMMYY --dry-run
-python3 scripts/zip-final-listings.py BatchDDMMYY --dry-run --report BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
 ```
 
 Check:
@@ -329,6 +327,6 @@ Check:
 - Each listing folder has one `.PSDT`, `Thumbnail.jpg`, and `Preview1.jpg`.
 - Each `Thumbnail.jpg` is `2048 x 1424`.
 - Each `Preview1.jpg` is `2048px` wide and at most `6000px` tall.
-- ZIP archives contain the folder and exactly the required files.
+- After Step 4 final packaging, ZIP archives contain the folder and exactly the required files.
 - Top-level report `errors` is empty or contains only unresolved actionable failures.
 - Source product folders remain unchanged.
