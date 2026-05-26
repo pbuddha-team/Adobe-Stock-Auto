@@ -7,6 +7,7 @@ Official sources:
 - Adobe HelpX: `https://helpx.adobe.com/stock/contributor/help/artist-hub-migration/maximize-metadata-to-get-discovered.html`
 - Adobe Stock Metadata Guide PDF: `https://stock.adobe.com/pages/artisthub/pdf/2023-adobe-stock-metadata-guide.pdf`
 - Team research source of truth: `references/adobe-stock-metadata-guidelines-ai.md`
+- Adobe Stock template metadata workbook: `assets/AdobeStockTemplates_MetadataForm_Portal_6-2023.xlsx`
 
 ## CSV Shape
 
@@ -35,13 +36,57 @@ Observed prior-batch defaults:
 
 - `Colorspace`: `RGB`
 - `Disclaimers`: `Photos or design elements shown in the preview are for display only and are not included in the downloaded file`
-- `Template Category` values:
-  - `22` for photo-effect style templates in the example CSV.
-  - `39` for text-effect/typography style templates in the example CSV.
 - `Number of Pages or Options`: observed values include `1 design option`, `2 design options`, `3 design options`, and `4 design options`.
 - `Template Size`: written as `4500 x 3000 pixels` or `3000 x 4500 pixels` in the prior CSV.
 
-Treat category code mappings as inferred from the example until Adobe's official category table or a team-owned mapping is provided.
+Template category codes come from page 2 / `Instructions` sheet of the Adobe Stock template metadata workbook. Do not infer category numbers from old CSV rows when the workbook table applies.
+
+## Template Category Codes
+
+Use the official category list from the workbook's `Instructions` sheet, rows 5-30:
+
+```text
+11  Infographics
+12  Social Media
+13  Brochures and Catalogs
+14  Business Cards
+15  Calendars and Planners
+16  Collages and Moodboards
+17  Digital Magazines
+18  Digital Presentations and Proposals
+19  Flyers and Posters
+20  Stationery
+21  Frame Mockups
+22  Image Effects
+23  Invitations and Cards
+24  Label and Sticker Sets
+25  Logo and Icon Sets
+27  Menus
+28  Mobile Mockups
+29  Mobile UI/UX
+32  Pattern and Texture Sets
+33  Print Design Mockups
+34  Print Magazines
+35  Print Presentations and Proposals
+36  Resumes
+37  Screen Mockups
+39  Text Effects
+41  Web Banners
+42  Web UI/UX
+```
+
+Category selection policy:
+
+- `photo effect` / image effect products use `22 Image Effects`.
+- `text effect` / typography effect products use `39 Text Effects`.
+- `mockup` is not one category; choose the specific official mockup category:
+  - physical frame/wall art frames: `21 Frame Mockups`
+  - mobile device/app presentation: `28 Mobile Mockups`
+  - print/object/packaging/product presentation, including most physical product mockups: `33 Print Design Mockups`
+  - desktop, laptop, monitor, website, app screen, or UI display mockups: `37 Screen Mockups`
+- `graphics template` is not one category; choose the closest official category by actual output/use case, such as `12 Social Media`, `16 Collages and Moodboards`, `19 Flyers and Posters`, `25 Logo and Icon Sets`, `32 Pattern and Texture Sets`, or another exact category from the table.
+- If one product could fit multiple categories, prefer the category that best describes the delivered editable template, not just the preview context.
+- If the category remains ambiguous after inspecting product title, output files, and previews, record a row-level warning and ask for a decision before final CSV export.
 
 ## Row Mapping
 
@@ -208,13 +253,12 @@ Before saving or uploading:
 
 ## Open Questions for Q&A
 
-1. Is `Template Category` mapping confirmed as `22 = photo effects` and `39 = text effects`, or is there an official category table we should store in the repo?
-2. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
-3. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
-4. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-5. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
-6. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-7. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-8. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-9. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-10. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+1. Should we enforce Adobe's 49-keyword maximum strictly? The prior CSV has rows that appear to exceed 49 by comma-separated counting.
+2. Do we want Adobe's suggested 15-35 keyword range, or the denser historical Pixelbuddha 40-49 keyword style?
+3. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
+4. Should `no people` or `nobody` be added to template rows when previews contain no people, or is that inappropriate for template products?
+5. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
+6. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+7. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+8. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+9. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
