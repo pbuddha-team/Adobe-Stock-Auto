@@ -230,6 +230,43 @@ Text effect:
 text effect, typography effect, text style, [distinctive text effect phrase], logo, branding, poster design, Photoshop, psd, editable
 ```
 
+## Number of Pages or Options
+
+This field is not crucial enough to require manual review. Derive it automatically from PSDT metadata and accept the possibility of occasional error. Write the final value as:
+
+```text
+1 design option
+2 design options
+3 design options
+```
+
+Use these additive signals:
+
+- Editable title/content smart object layer: count `1` option when a layer name starts with or contains `Edit`, `Editable`, `Edit Content`, `Edit Contents`, `Your Image Here`, `Your Design Here`, `Your Text Here`, or a similar editable-content/title layer. Prioritize smart-object layers when the parser can detect them. Multiple editable smart-object layers that represent one placement area should still count as one option unless their names clearly identify separate buyer-facing placements.
+- `Adjustments` folder/layer group: count `1` option when a top-level or obvious group is named `Adjustments`.
+- `Background Color` layer: count `1` option when a layer is named `Background Color`, `BG Color`, or equivalent.
+- Numeric option folder: count `N` options when a folder/group contains child layers named only as numbers (`1`, `2`, `3`, ...), and only one of those numbered children is visible. This is the strongest signal for multiple buyer-facing options. Use the numeric count, not `1`.
+
+Counting rule:
+
+1. Detect all signals above from the final PSDT.
+2. Sum the option counts.
+3. Minimum value is `1`.
+4. If a numeric option folder is detected, include its full `N` count plus other distinct additive controls such as editable content, adjustments, or background color.
+5. If the parser cannot determine visibility for numeric children, still use the numeric folder count when the group clearly represents options, and add a warning to the Step 4 report.
+6. Do not count ordinary layer count, texture count, hidden helper layers, preview-source layers, or repeated internal effect layers unless they match one of the rules above.
+
+Examples:
+
+```text
+Edit Content smart object only -> 1 design option
+Edit Content + Adjustments -> 2 design options
+Edit Content + Adjustments + Background Color -> 3 design options
+Edit Content + numeric folder with 4 visible-choice children -> 5 design options
+```
+
+Record the detected signals in the Step 4 report so questionable counts can be audited later, but do not block CSV generation solely because this value may be imperfect.
+
 ## Validation Checklist
 
 Before saving or uploading:
@@ -244,7 +281,7 @@ Before saving or uploading:
 - `Template Category` uses an approved code.
 - `Template Size` matches the PSD/template dimensions.
 - `Colorspace` is an allowed portal value.
-- `Number of Pages or Options` matches actual design options.
+- `Number of Pages or Options` is derived from PSDT signals and its detected signals are recorded in the Step 4 report.
 - `Disclaimers` is present when preview photos/design elements are not included.
 - No row contains brand/trademark names, unsupported end-use guesses, offensive terms, or irrelevant terms.
 - CSV quoting is valid after commas, ampersands, en dashes, and parentheses.
@@ -253,8 +290,7 @@ Before saving or uploading:
 ## Open Questions for Q&A
 
 1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. How should `Number of Pages or Options` be derived: PSD artboards/layers, preview variants, source folders, or manual product knowledge?
-3. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
-4. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
-5. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-6. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+2. How should `Template Size` be derived when horizontal and vertical variants exist: from PSD dimensions, Preview1 orientation, or standard template canvas?
+3. Are generative-AI flags or releases relevant to any Pixelbuddha previews, or always out of scope?
+4. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
+5. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
