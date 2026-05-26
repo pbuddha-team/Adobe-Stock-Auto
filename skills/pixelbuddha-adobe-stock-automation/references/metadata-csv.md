@@ -96,6 +96,8 @@ Every CSV data row should first map to a final listing folder in:
 BatchDDMMYY/Adobe/ListingFolderName/
 ```
 
+Use exactly one metadata row per final listing ZIP. If one source product creates several final listing folders, each final listing folder gets its own row and its own final ZIP filename. Do not create alternate rows for secondary use cases unless there is a separate final listing package.
+
 Step 4 determines the final title and the portal-facing ZIP filename. The `Filename` cell should be the ZIP filename expected by the portal. In the prior CSV, filenames are compact marketing names with no spaces, an en dash between name and use-case phrase, and `(PSD).zip` at the end, for example:
 
 ```text
@@ -110,6 +112,14 @@ VerticalDamagedScannerEffect/
 ```
 
 Do not package ZIPs before this mapping is final. Final ZIP packaging should use the Step 4 `Filename` values, not the temporary listing folder names.
+
+Store the completed metadata CSV beside the listing folders by default:
+
+```text
+BatchDDMMYY/Adobe/BatchDDMMYY-metadata.csv
+```
+
+Record this path in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `step4.csv`.
 
 ## Adobe Metadata Rules
 
@@ -311,5 +321,4 @@ Before saving or uploading:
 ## Open Questions for Q&A
 
 1. Should keywords include both `mockup` and `mock up`, both `psd` and `psdt`, and both `editable` and `edit/customize`, or should we de-duplicate these?
-2. Should metadata rows be generated once per final listing ZIP, or can one product produce multiple CSV rows for alternate use cases?
-3. Where should the completed CSV be stored locally and in Dropbox, and should it be included in the automation report upload folder?
+2. Should the completed CSV be included in the Dropbox automation report upload folder, or only kept in the local batch folder until final portal submission?
