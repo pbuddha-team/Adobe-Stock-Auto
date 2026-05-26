@@ -114,7 +114,7 @@ Source product folders must stay intact. Copy files into `BatchDDMMYY/Adobe/`; d
 
 ## Reporting
 
-Use one full batch report per batch:
+Use one canonical full-batch report per batch:
 
 ```text
 BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json
@@ -126,17 +126,38 @@ The Dropbox destination for synced reports is:
 /Pixelbuddha/Products/Adobe Stock Automation
 ```
 
-Top-level report sections:
+Do not create separate step report files in normal operation. If a legacy or temporary step report exists, absorb its useful data into the canonical report, move the old file under `BatchDDMMYY/Adobe/_legacy_reports/`, and reference it in `legacyReportsAbsorbed`.
 
-- `step1`
-- `step2`
-- `preview1`
-- `step4`
-- `finalPackaging`
-- `uploadSync`
+Canonical top-level report keys:
+
+- `reportVersion`
+- `reportType`
+- `batch`
+- `status`
+- `updatedAt`
+- `dropboxFolder`
+- `paths`
+- `summary`
+- `stages`
+- `artifacts`
+- `warnings`
 - `errors`
+- `legacyReportsAbsorbed`
 
-Each process step should update its own section. The top-level `errors` array is only for actionable failures requiring attention. Detailed warnings can stay inside step sections.
+Canonical `stages` keys:
+
+- `step1FetchDropboxBatch`
+- `step2PrepareListingFolders`
+- `step3BuildPreview1`
+- `step4MetadataCsv`
+- `step4ListingAlignment`
+- `finalPackaging`
+- `validation`
+- `uploadSync`
+
+Each process step updates only its own object under `stages`. The top-level `errors` array is only for unresolved actionable failures. The top-level `warnings` array is for non-blocking issues worth auditing later. Detailed per-listing warnings and errors should also remain near the relevant row/result.
+
+For the full schema and required validation checks, use `references/batch-report-format.md`.
 
 ## Step 1: Fetch Dropbox Batch
 
