@@ -10,7 +10,15 @@ Installable Codex skill:
 skills/pixelbuddha-adobe-stock-automation/
 ```
 
-The skill is the best entry point for a freshly installed Codex employee environment. It verifies tools, explains credentials, and gives the agent the exact processing rules.
+Claude Code project skill:
+
+```text
+.claude/skills/pixelbuddha-adobe-stock-automation/
+```
+
+The skill is the best entry point for a freshly installed employee environment. It starts by asking whether to continue in English or Russian, verifies tools, explains credentials, and gives the agent the exact processing rules.
+
+For Claude Code, start Claude from this repository root or any folder below it. Claude discovers project skills from `.claude/skills/<skill-name>/SKILL.md`. To install it as a personal Claude skill, copy `.claude/skills/pixelbuddha-adobe-stock-automation/` into `~/.claude/skills/`.
 
 ## Local Setup
 
@@ -24,6 +32,16 @@ rg --version
 python3 -c "import PIL; print(PIL.__version__)"
 ```
 
+On Windows PowerShell:
+
+```powershell
+git --version
+node --version
+py --version
+rg --version
+py -c "import PIL; print(PIL.__version__)"
+```
+
 Known-good environment:
 
 - Node.js 22
@@ -35,6 +53,12 @@ If Pillow is missing:
 
 ```sh
 python3 -m pip install --user Pillow
+```
+
+On Windows:
+
+```powershell
+py -m pip install --user Pillow
 ```
 
 ## Credentials
@@ -98,7 +122,10 @@ The consolidated corporate skill documentation and authoritative Step 4/reportin
 ```text
 skills/pixelbuddha-adobe-stock-automation/SKILL.md
 skills/pixelbuddha-adobe-stock-automation/references/
+.claude/skills/pixelbuddha-adobe-stock-automation/SKILL.md
 ```
+
+Keep the Codex and Claude skill folders in sync when editing skill instructions.
 
 ## Generated Files
 
