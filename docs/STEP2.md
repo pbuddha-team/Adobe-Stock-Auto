@@ -391,7 +391,7 @@ Reason: `1.jpg` and `2.jpg` are both pale full-width sketch previews, while `3.j
 
 ## Undefined Or Manual Decisions
 
-These parts still require visual judgment or future rules:
+These parts require visual judgment by the agent:
 
 - Detecting before/after slides automatically. For now, decide manually when a slide should stay full-width.
 - Deciding which image pair is safe for the two-column row in a 5-image grid.
@@ -438,4 +438,4 @@ ZIP rules:
 - Do not include batch reports inside listing ZIPs.
 - Do not include other ZIP files inside listing ZIPs.
 - If a listing folder is missing `.PSDT`, `Thumbnail.jpg`, or `Preview1.jpg`, treat it as a hard failure and do not create that ZIP.
-- Update the local full batch report at `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `finalPackaging`.
+- Update the local full batch report at `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `stages.finalPackaging`.

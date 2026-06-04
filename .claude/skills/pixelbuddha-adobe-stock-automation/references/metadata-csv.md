@@ -346,6 +346,14 @@ Before saving or uploading:
 - CSV quoting is valid after commas, ampersands, en dashes, and parentheses.
 - `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` is updated with `stages.step4MetadataCsv` and `stages.step4ListingAlignment`, including generated rows, warnings, and hard errors.
 
-## Open Questions for Q&A
+## CSV Storage and Sync
 
-1. Should the completed CSV be included in the Dropbox automation report upload folder, or only kept in the local batch folder until final portal submission?
+Default local path:
+
+```text
+BatchDDMMYY/Adobe/BatchDDMMYY-metadata.csv
+```
+
+Record the CSV under `artifacts.metadataCsv` and `stages.step4MetadataCsv.csv` in the canonical batch report.
+
+Do not upload or sync the CSV by default during metadata generation. If the user explicitly runs an `uploadSync` step, sync the canonical report and metadata CSV together to the configured Dropbox automation folder. Do not upload final ZIPs through the report sync unless the user explicitly asks for ZIP upload.

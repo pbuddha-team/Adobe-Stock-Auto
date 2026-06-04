@@ -1,6 +1,6 @@
 ---
 name: pixelbuddha-adobe-stock-automation
-description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh Codex install: verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain batch automation reports. Use when the user asks to run, document, debug, or extend Pixelbuddha Adobe Stock automation steps."
+description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh employee environment in Codex or Claude Code: choose English or Russian, verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain canonical batch reports. Use when the user asks to run, install, document, debug, or extend Pixelbuddha Adobe Stock automation."
 ---
 
 # Pixelbuddha Adobe Stock Automation
@@ -17,7 +17,23 @@ Would you like to continue in English or Russian?
 
 After the user answers, continue in that language unless they switch. Assume the employee may be unfamiliar with terminals, package managers, Git, Python, or Node. Explain each step plainly, keep commands copy-pasteable, and say what success should look like. Do not dump a long checklist all at once; guide the setup in small confirmed steps.
 
-## Fresh Codex Setup
+## User-Facing Checkpoints
+
+Use short, concrete status messages. The employee should always know whether a step is read-only, writes files, downloads data, or packages final deliverables.
+
+Recommended messages:
+
+- Before setup checks: `I will check the required tools now. This only reads version information and does not change files.`
+- Before installing tools: `This machine is missing [tool]. I need approval before installing it.`
+- Before editing `.env`: `Credentials must stay local. I will not ask you to paste secrets into chat.`
+- Before Dropbox dry run: `This validates Dropbox access and selected products without downloading files.`
+- Before live Dropbox fetch: `This will download the selected product folders into BatchDDMMYY.`
+- Before generating previews: `This will create or update Preview1.jpg and Thumbnail.jpg inside final listing folders.`
+- Before Step 4 metadata: `This will determine final listing titles, CSV filenames, and metadata rows.`
+- Before final packaging: `This will create the final ZIP files that must match the CSV Filename column.`
+- On completion: `Finalization passed: metadata CSV, renamed listing folders, titled PSDT files, Preview1.jpg, Thumbnail.jpg, final ZIPs, and the canonical report are aligned.`
+
+## Fresh Environment Setup
 
 Before touching a batch, verify local tools. If the employee is on a fresh machine or any required tool is missing, use `references/environment-setup.md` and walk them through installing the missing pieces for their OS.
 
@@ -203,7 +219,7 @@ Report back selected products, skipped PSDs, final batch folder, and log path. L
 
 ## Step 2: Prepare Final Listing Folders
 
-Step 2 turns a source `BatchDDMMYY` into final Adobe listing folders. In the current project this was completed manually with report entries; no dedicated Step 2 script is present yet.
+Step 2 turns a source `BatchDDMMYY` into final Adobe listing folders. No dedicated Step 2 script is present yet. The agent must perform the file inspection, copying, naming, PPI checks, thumbnail creation, and report updates using the rules below instead of handing the work back to the employee unless a hard ambiguity or source-file error requires a decision.
 
 Global rules:
 
@@ -302,7 +318,7 @@ ZIP rules:
 - Do not include reports inside listing ZIPs.
 - Do not include other ZIPs inside listing ZIPs.
 - If a listing is missing `.PSDT`, `Thumbnail.jpg`, or `Preview1.jpg`, treat as hard failure and do not create that ZIP.
-- Write packaging results under `finalPackaging` in the batch report.
+- Write packaging results under `stages.finalPackaging` in the batch report.
 
 ## Current Reference Cases
 

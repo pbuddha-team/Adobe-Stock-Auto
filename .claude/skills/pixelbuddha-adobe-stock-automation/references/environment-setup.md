@@ -20,6 +20,7 @@ The automation needs:
 - Python 3.10 or newer: runs image/report/packaging scripts. Python 3.12 is known good.
 - Pillow: Python image library for `Preview1.jpg` generation.
 - ripgrep: fast repo search.
+- Claude Code, when the employee will use the Claude project skill.
 
 Check tools:
 
@@ -96,6 +97,28 @@ python3 -m pip install --user Pillow
 ```
 
 If Node.js from the distro is older than 18, use the platform's preferred Node LTS installer or ask before adding a new package source.
+
+## Claude Code Setup
+
+If the employee will use Claude, verify Claude Code after Node.js is installed:
+
+```sh
+claude --version
+```
+
+If Claude Code is missing, install it with npm:
+
+```sh
+npm install -g @anthropic-ai/claude-code
+```
+
+Do not use `sudo npm install -g`. If global npm permissions fail, fix npm's user-level prefix or use the official Claude Code installer path for the employee's OS. After installation, start Claude Code from the repository root:
+
+```sh
+claude
+```
+
+On first launch, Claude Code will ask the employee to authenticate.
 
 ## Repository Setup
 
