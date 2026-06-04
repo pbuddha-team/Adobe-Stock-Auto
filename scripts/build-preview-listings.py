@@ -15,10 +15,15 @@ from PIL import ImageStat
 
 
 CANVAS_WIDTH = 2048
+THUMBNAIL_WIDTH = 2048
+THUMBNAIL_HEIGHT = 1424
+THUMBNAIL_FALLBACK_RATIO = 3 / 2
+ASPECT_TOLERANCE = 0.01
 MAX_CANVAS_HEIGHT = 6000
 GUTTER = 10
 BACKGROUND = (255, 255, 255)
 QUALITY = 60
+THUMBNAIL_QUALITY = 90
 MAX_GRID_IMAGES = 6
 IGNORED_GRID_NAMES = {"fp.jpg", "t.jpg", "thumbnail.jpg", "adobe.jpg"}
 GRID_ORDER_OVERRIDES = {
@@ -33,6 +38,7 @@ class ProductResult:
     output: Path
     grid_images: list[Path]
     thumbnail_source: Path | None
+    thumbnail_note: str | None
     errors: list[str]
     warnings: list[str]
     selection_note: str | None = None
@@ -74,6 +80,7 @@ def thumbnail_candidates(product_dir: Path, source_dir: Path | None) -> list[Pat
                 source_dir / "thumbnail.jpg",
                 source_dir / "adobe.jpg",
                 source_dir / "2048x1424.jpg",
+                source_dir / "1.jpg",
             ]
         )
     preview_dir = product_dir / "Preview files"
@@ -84,6 +91,7 @@ def thumbnail_candidates(product_dir: Path, source_dir: Path | None) -> list[Pat
             preview_dir / "adobe.jpg",
             preview_dir / "2048x1424.jpg",
             preview_dir / "t.jpg",
+            preview_dir / "1.jpg",
         ]
     )
     if source_dir:
@@ -91,7 +99,62 @@ def thumbnail_candidates(product_dir: Path, source_dir: Path | None) -> list[Pat
         candidates.extend(sorted(source_dir.rglob("thumbnail.jpg"), key=natural_key))
         candidates.extend(sorted(source_dir.rglob("adobe.jpg"), key=natural_key))
         candidates.extend(sorted(source_dir.rglob("2048x1424.jpg"), key=natural_key))
+        candidates.extend(sorted(source_dir.rglob("1.jpg"), key=natural_key))
     return [path for path in candidates if path.is_file() and is_jpg(path)]
+
+
+def image_size(path: Path) -> tuple[int, int]:
+    with Image.open(path) as image:
+        return image.size
+
+
+def thumbnail_source_note(path: Path) -> str | None:
+    width, height = image_size(path)
+    if width == THUMBNAIL_WIDTH and height == THUMBNAIL_HEIGHT:
+        return f"exact {THUMBNAIL_WIDTH} x {THUMBNAIL_HEIGHT} source"
+
+    aspect = width / height
+    if path.name.lower() == "1.jpg" and abs(aspect - THUMBNAIL_FALLBACK_RATIO) <= ASPECT_TOLERANCE:
+        return (
+            "generated from 3:2 1.jpg by resizing to "
+            f"{THUMBNAIL_HEIGHT}px height and center-cropping to {THUMBNAIL_WIDTH}px width"
+        )
+
+    return None
+
+
+def select_thumbnail_source(paths: list[Path]) -> tuple[Path | None, str | None]:
+    for path in paths:
+        note = thumbnail_source_note(path)
+        if note:
+            return path, note
+    return None, None
+
+
+def write_thumbnail(source_path: Path, output_path: Path) -> None:
+    if source_path.resolve() == output_path.resolve():
+        return
+
+    width, height = image_size(source_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if width == THUMBNAIL_WIDTH and height == THUMBNAIL_HEIGHT:
+        shutil.copy2(source_path, output_path)
+        return
+
+    aspect = width / height
+    if source_path.name.lower() != "1.jpg" or abs(aspect - THUMBNAIL_FALLBACK_RATIO) > ASPECT_TOLERANCE:
+        raise ValueError(
+            f"thumbnail source must be exact {THUMBNAIL_WIDTH} x {THUMBNAIL_HEIGHT} "
+            f"or 3:2 1.jpg: {source_path}"
+        )
+
+    with Image.open(source_path) as image:
+        image = image.convert("RGB")
+        scaled_width = round(image.width * (THUMBNAIL_HEIGHT / image.height))
+        resized = image.resize((scaled_width, THUMBNAIL_HEIGHT), Image.Resampling.LANCZOS)
+        left = max(0, (resized.width - THUMBNAIL_WIDTH) // 2)
+        cropped = resized.crop((left, 0, left + THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT))
+        cropped.save(output_path, "JPEG", quality=THUMBNAIL_QUALITY, optimize=True)
 
 
 def source_for_product(product_dir: Path) -> tuple[Path | None, list[Path]]:
@@ -395,18 +458,22 @@ def prepare_product(
         note for note in [selection_note, height_note] if note
     ) or None
     thumbnails = [cover_image] if cover_image else thumbnail_candidates(product_dir, source_dir)
+    thumbnail_source, thumbnail_note = select_thumbnail_source(thumbnails)
     errors = []
     warnings = []
     if not grid_images:
         errors.append("no numbered JPGs found for Preview1.jpg")
-    if not thumbnails:
-        errors.append("no Thumbnail.jpg or t.jpg source found")
+    if not thumbnail_source:
+        errors.append(
+            "no exact 2048 x 1424 thumbnail source or valid 3:2 1.jpg fallback found"
+        )
     return ProductResult(
         product=product_dir,
         source=source_dir,
         output=output_dir,
         grid_images=grid_images,
-        thumbnail_source=thumbnails[0] if thumbnails else None,
+        thumbnail_source=thumbnail_source,
+        thumbnail_note=thumbnail_note,
         errors=errors,
         warnings=warnings,
         selection_note=selection_note,
@@ -462,6 +529,7 @@ def result_to_log(batch_dir: Path, result: ProductResult) -> dict:
         "thumbnail": rel(result.output / "Thumbnail.jpg"),
         "gridImages": [rel(path) for path in result.grid_images],
         "thumbnailSource": rel(result.thumbnail_source),
+        "thumbnailNote": result.thumbnail_note,
         "selectionNote": result.selection_note,
         "errors": result.errors,
         "warnings": result.warnings,
@@ -553,6 +621,8 @@ def run(batch_dir: Path, dry_run: bool, report_path: Path | None) -> int:
         for image in result.grid_images:
             print(f"    - {image.relative_to(batch_dir)}")
         print(f"  thumbnail: {result.thumbnail_source or 'missing'}")
+        if result.thumbnail_note:
+            print(f"  thumbnail note: {result.thumbnail_note}")
         if result.selection_note:
             print(f"  note: {result.selection_note}")
         for error in result.errors:
@@ -565,7 +635,7 @@ def run(batch_dir: Path, dry_run: bool, report_path: Path | None) -> int:
 
         result.output.mkdir(parents=True, exist_ok=True)
         build_grid(result.grid_images, result.output / "Preview1.jpg")
-        shutil.copy2(result.thumbnail_source, result.output / "Thumbnail.jpg")
+        write_thumbnail(result.thumbnail_source, result.output / "Thumbnail.jpg")
 
     if report_path:
         write_report(batch_dir, results, report_path)

@@ -219,10 +219,11 @@ Global rules:
 Thumbnail routine:
 
 1. Prefer an image already exactly `2048 x 1424`.
-2. If none exists, try closest filename candidates: `1.jpg`, `adobe.jpg`, `thumbnail.jpg`.
-3. Only use fallback candidates whose aspect ratio matches `2048 x 1424`.
-4. Stretch valid fallback candidates to exactly `2048 x 1424`.
-5. If no valid candidate exists, stop that listing and log an error.
+2. If no exact image exists, use `1.jpg` from the active thumbnail/preview source.
+3. The fallback `1.jpg` must have `3:2` aspect ratio.
+4. Generate `Thumbnail.jpg` by scaling fallback `1.jpg` to `1424px` height and center-cropping left/right to `2048px` width.
+5. Do not stretch arbitrary fallback candidates to `2048 x 1424`.
+6. If no exact image and no valid `3:2` `1.jpg` exists, stop that listing and log an error.
 
 Scenario detection priority:
 

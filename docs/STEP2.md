@@ -113,13 +113,11 @@ Use this routine:
 
 1. Look for an image that is already exactly `2048 x 1424`.
 2. If found, copy it as `Thumbnail.jpg`.
-3. If no exact image exists, look for the closest candidate by filename:
-   - `1.jpg`
-   - `adobe.jpg`
-   - `thumbnail.jpg`
-4. Only use a fallback candidate if its aspect ratio matches `2048 x 1424`.
-5. Resize the fallback candidate by stretching to exactly `2048 x 1424`.
-6. If no exact image and no valid fallback candidate exists, return an error.
+3. If no exact image exists, use `1.jpg` from the active thumbnail/preview source.
+4. The fallback `1.jpg` must have `3:2` aspect ratio.
+5. Create `Thumbnail.jpg` from fallback `1.jpg` by scaling it to `1424px` height, then center-cropping left and right to exactly `2048px` width.
+6. Do not stretch arbitrary fallback candidates to `2048 x 1424`.
+7. If no exact image and no valid `3:2` `1.jpg` exists, return an error.
 
 ## Scenario Detection
 
@@ -175,7 +173,7 @@ Thumbnail source priority:
 2. `Preview files/adobe.jpg`.
 3. `Preview files/1.jpg`.
 
-The global thumbnail routine still applies: prefer an exact `2048 x 1424` image, otherwise resize a valid fallback candidate.
+The global thumbnail routine still applies: prefer an exact `2048 x 1424` image, otherwise generate from a valid `3:2` `1.jpg` by height-scaling and center-cropping.
 
 ## Scenario 2: Multiple Complete Adobe Listing Folders
 
@@ -301,7 +299,7 @@ Return an error for a listing when:
 - The selected PSD is not `300 PPI`.
 - No PSD can be identified for the active scenario.
 - A required thumbnail cannot be found or produced.
-- A fallback thumbnail candidate has the wrong aspect ratio.
+- Fallback `1.jpg` is missing or does not have `3:2` aspect ratio.
 
 Do not delete or rewrite source files while handling errors.
 
