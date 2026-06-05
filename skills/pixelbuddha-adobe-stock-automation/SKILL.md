@@ -291,7 +291,8 @@ python3 scripts/build-preview-listings.py BatchDDMMYY --report BatchDDMMYY/Adobe
 - Ignore `fp.jpg`, `t.jpg`, `thumbnail.jpg`, and `adobe.jpg` for the grid.
 - Use no more than 6 numbered images.
 - First feature image should stay full-width.
-- Use automatic image stats and predictable overrides to improve contrast/rhythm.
+- Keep the first feature image first, then use lightweight image stats to reorder the remaining selected images for adjacent-row contrast and visual rhythm when the first two selected slides are too similar.
+- Use predictable overrides only when a known product needs a fixed image order.
 - If the grid would exceed `6000px`, remove lower-priority images from the end and log the selection note.
 
 Default grid schemas:

@@ -25,6 +25,8 @@ BACKGROUND = (255, 255, 255)
 QUALITY = 60
 THUMBNAIL_QUALITY = 90
 MAX_GRID_IMAGES = 6
+RHYTHM_REORDER_MIN_GAIN = 18
+RHYTHM_SOURCE_ORDER_BIAS = 2
 IGNORED_GRID_NAMES = {"fp.jpg", "t.jpg", "thumbnail.jpg", "adobe.jpg"}
 GRID_ORDER_OVERRIDES = {
     "PencilSketchPhotoEffect": [1, 3, 2],
@@ -218,6 +220,45 @@ def image_stats(path: Path) -> tuple[float, float, float]:
     return brightness, contrast, dark_ratio
 
 
+def visual_features(path: Path) -> tuple[float, float, float, float, float, float]:
+    with Image.open(path) as image:
+        rgb = image.convert("RGB").resize((128, 128), Image.Resampling.LANCZOS)
+        grayscale = rgb.convert("L")
+        gray_stat = ImageStat.Stat(grayscale)
+        rgb_stat = ImageStat.Stat(rgb)
+        brightness = gray_stat.mean[0]
+        contrast = gray_stat.stddev[0]
+        histogram = grayscale.histogram()
+        dark_ratio = sum(histogram[:50]) / (128 * 128)
+        means = rgb_stat.mean
+        stddevs = rgb_stat.stddev
+        colorfulness = max(means) - min(means) + sum(stddevs) / 3
+        red_blue_balance = means[0] - means[2]
+        green_balance = means[1] - ((means[0] + means[2]) / 2)
+    return (
+        brightness,
+        contrast,
+        dark_ratio,
+        colorfulness,
+        red_blue_balance,
+        green_balance,
+    )
+
+
+def visual_distance(
+    left: tuple[float, float, float, float, float, float],
+    right: tuple[float, float, float, float, float, float],
+) -> float:
+    return (
+        abs(left[0] - right[0]) * 0.45
+        + abs(left[1] - right[1]) * 0.75
+        + abs(left[2] - right[2]) * 120
+        + abs(left[3] - right[3]) * 0.45
+        + abs(left[4] - right[4]) * 0.16
+        + abs(left[5] - right[5]) * 0.16
+    )
+
+
 def select_grid_images(images: list[Path]) -> tuple[list[Path], str | None]:
     if len(images) <= MAX_GRID_IMAGES:
         return images, None
@@ -257,30 +298,46 @@ def rhythm_ordered_images(images: list[Path]) -> tuple[list[Path], str | None]:
     if len(images) < 3:
         return images, None
 
+    features = {image: visual_features(image) for image in images}
     first = images[0]
-    second = images[1]
-    first_brightness, _, _ = image_stats(first)
-    second_brightness, _, second_dark_ratio = image_stats(second)
+    current_second = images[1]
+    current_distance = visual_distance(features[first], features[current_second])
+    best_second = max(
+        images[1:],
+        key=lambda image: visual_distance(features[first], features[image]),
+    )
+    best_distance = visual_distance(features[first], features[best_second])
 
-    # If the first two slides are both pale, bring an obvious darker/demo slide
-    # forward so the grid reads with stronger contrast near the top.
-    if first_brightness < 145 or second_brightness < 145 or second_dark_ratio > 0.12:
+    if best_second == current_second or best_distance < current_distance + RHYTHM_REORDER_MIN_GAIN:
         return images, None
 
-    candidates = []
-    for index, image in enumerate(images[2:], start=2):
-        brightness, contrast, dark_ratio = image_stats(image)
-        if brightness <= second_brightness - 45 or dark_ratio >= 0.20:
-            candidates.append((index, brightness, -contrast, image))
+    ordered = [first]
+    remaining = images[1:]
+    while remaining:
+        previous = ordered[-1]
+        scored = []
+        for index, image in enumerate(remaining):
+            distance_to_previous = visual_distance(features[previous], features[image])
+            distance_to_sequence = min(
+                visual_distance(features[image], features[chosen])
+                for chosen in ordered
+            )
+            source_order_bias = max(0, len(remaining) - index) * RHYTHM_SOURCE_ORDER_BIAS
+            scored.append(
+                (
+                    distance_to_previous + distance_to_sequence * 0.2 + source_order_bias,
+                    image,
+                )
+            )
+        _, chosen = max(scored, key=lambda item: item[0])
+        ordered.append(chosen)
+        remaining.remove(chosen)
 
-    if not candidates:
+    if ordered == images:
         return images, None
 
-    index, _, _, image = min(candidates)
-    reordered = images[:]
-    reordered.pop(index)
-    reordered.insert(1, image)
-    return reordered, f"moved {image.name} to position 2 for grid contrast"
+    ordered_names = ", ".join(path.name for path in ordered)
+    return ordered, f"reordered for visual rhythm: {ordered_names}"
 
 
 def ordered_grid_images(images: list[Path], output_dir: Path) -> tuple[list[Path], str | None]:

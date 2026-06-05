@@ -327,6 +327,7 @@ Preview1.jpg
 - Use numbered JPG files only. Natural numeric order is the starting point, but the script may reorder images to improve visual sequencing.
 - Use no more than 6 numbered images for this grid.
 - The first 6 numbered images are the starting pool, but the script may skip weak or repetitive images in favor of stronger later numbered images.
+- The first selected feature image stays first. If the first two selected slides are visually too similar, the script may reorder the remaining selected slides using lightweight brightness/color/texture stats so adjacent rows have stronger rhythm.
 - If the composed grid would exceed `6000px` height, automatically remove lower-priority images from the end of the selected grid until it fits. Log the removed images in the selection note.
 
 Source priority:
