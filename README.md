@@ -1,8 +1,8 @@
 # Adobe Stock Auto
 
-Pixelbuddha automation for Adobe Stock product batches. The repo contains the current workflow scripts plus an installable Codex skill that documents the fresh-machine setup, Dropbox fetch, final listing preparation, preview generation, metadata/CSV creation, final naming, packaging, and reporting.
+Pixelbuddha automation for Adobe Stock product batches. The repo contains the current workflow scripts plus an installable AI-agent skill that documents the fresh-machine setup, Dropbox fetch, final listing preparation, preview generation, metadata/CSV creation, final naming, packaging, and reporting.
 
-## Codex Skill
+## AI Agent Skill
 
 Installable Codex skill:
 
@@ -17,6 +17,14 @@ Claude Code project skill:
 ```
 
 The skill is the best entry point for a freshly installed employee environment. It starts by asking whether to continue in English or Russian, verifies tools, explains credentials, and gives the agent the exact processing rules.
+
+The workflow is model-provider agnostic. It does not use OpenAI, Anthropic, Claude, Codex, or DeepSeek APIs. A compatible agent only needs to read repository files, run shell commands, edit files, and ask before software installs or credential changes. For DeepSeek-powered agents or other generic coding agents, point the agent to:
+
+```text
+skills/pixelbuddha-adobe-stock-automation/SKILL.md
+```
+
+Then run it from the repository root.
 
 For Claude Code, start Claude from this repository root or any folder below it. Claude discovers project skills from `.claude/skills/<skill-name>/SKILL.md`. To install it as a personal Claude skill, copy `.claude/skills/pixelbuddha-adobe-stock-automation/` into `~/.claude/skills/`.
 
@@ -125,7 +133,7 @@ skills/pixelbuddha-adobe-stock-automation/references/
 .claude/skills/pixelbuddha-adobe-stock-automation/SKILL.md
 ```
 
-Keep the Codex and Claude skill folders in sync when editing skill instructions.
+Keep the Codex and Claude skill folders in sync when editing skill instructions. For generic agents, the canonical entrypoint is `skills/pixelbuddha-adobe-stock-automation/SKILL.md`.
 
 ## Generated Files
 

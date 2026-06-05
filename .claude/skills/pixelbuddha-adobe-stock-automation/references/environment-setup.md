@@ -20,7 +20,7 @@ The automation needs:
 - Python 3.10 or newer: runs image/report/packaging scripts. Python 3.12 is known good.
 - Pillow: Python image library for `Preview1.jpg` generation.
 - ripgrep: fast repo search.
-- Claude Code, when the employee will use the Claude project skill.
+- An AI agent interface that can read files and run shell commands. This can be Codex, Claude Code, a DeepSeek-powered coding agent, or another compatible local/remote agent.
 
 Check tools:
 
@@ -97,6 +97,27 @@ python3 -m pip install --user Pillow
 ```
 
 If Node.js from the distro is older than 18, use the platform's preferred Node LTS installer or ask before adding a new package source.
+
+## Generic AI Agent Setup
+
+Use this path for DeepSeek-powered agents or any other compatible coding agent that is not Codex or Claude Code.
+
+Minimum agent capabilities:
+
+- Read Markdown files from the repository.
+- Run shell commands in the repository folder.
+- Edit files when the workflow requires it.
+- Ask the employee for approval before installing software, writing credentials, deleting files, or committing/pushing changes.
+
+Provider-specific API keys are not required by this automation. The AI model provider only affects the chat/coding interface; the workflow itself runs through local Node.js and Python scripts plus Dropbox credentials.
+
+Point the agent to this file first:
+
+```text
+skills/pixelbuddha-adobe-stock-automation/SKILL.md
+```
+
+Then ask it to follow the skill from the repository root. If the agent has no native "skill" feature, it can still operate by reading `SKILL.md` and loading referenced files only when needed.
 
 ## Claude Code Setup
 

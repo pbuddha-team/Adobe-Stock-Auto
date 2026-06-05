@@ -1,11 +1,22 @@
 ---
 name: pixelbuddha-adobe-stock-automation
-description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh employee environment in Codex or Claude Code: choose English or Russian, verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain canonical batch reports. Use when the user asks to run, install, document, debug, or extend Pixelbuddha Adobe Stock automation."
+description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh employee environment in Codex, Claude Code, or any compatible filesystem/shell AI agent including DeepSeek-powered agents: choose English or Russian, verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain canonical batch reports. Use when the user asks to run, install, document, debug, or extend Pixelbuddha Adobe Stock automation."
 ---
 
 # Pixelbuddha Adobe Stock Automation
 
 Use this skill for Pixelbuddha Adobe Stock batch work. The workflow starts from a clean employee machine, downloads product folders from Dropbox, creates Adobe Stock-ready listing folders, builds preview grids, creates metadata CSV rows, determines final portal filenames, and keeps an auditable batch report. For Step 4 metadata and CSV work, read `references/metadata-csv.md` before generating or editing metadata rows.
+
+## Agent Compatibility
+
+This skill is model-provider agnostic. It does not require OpenAI, Anthropic, Claude, Codex, or DeepSeek APIs. A compatible AI agent only needs:
+
+- Ability to read this `SKILL.md` and the referenced Markdown files.
+- Filesystem access to the cloned repository or installed skill folder.
+- Shell access for the bundled Python and Node.js scripts.
+- Ability to ask the employee before installing software, changing credentials, or making destructive file changes.
+
+Use deterministic scripts for Dropbox fetching, Preview1/Thumbnail generation, and final ZIP packaging. Do not replace those scripts with ad hoc model reasoning. For DeepSeek-powered or other generic agents, load this file as the primary instruction document, then follow the same commands and references. Claude Code and Codex installation paths are convenience options, not workflow requirements.
 
 ## Start Gently
 

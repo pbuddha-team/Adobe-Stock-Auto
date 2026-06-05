@@ -1,6 +1,6 @@
 interface:
   display_name: "Pixelbuddha Adobe Stock Automation"
-  short_description: "Automate Adobe Stock batch packaging"
-  default_prompt: "Use $pixelbuddha-adobe-stock-automation to process a Pixelbuddha Adobe Stock batch from Dropbox through metadata, final naming, and packaging."
+  short_description: "Process Adobe Stock batches end to end"
+  default_prompt: "Use $pixelbuddha-adobe-stock-automation to process a Pixelbuddha Adobe Stock batch from Dropbox through previews, metadata, final naming, and packaging using the repo scripts as the source of truth."
 policy:
   allow_implicit_invocation: true
