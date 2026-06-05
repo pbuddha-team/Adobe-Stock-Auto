@@ -307,6 +307,8 @@ Default grid schemas:
 
 The script may use `Adobe` preview images, nested `Adobe` variant folders, or `Preview files` fallback. If final thumbnails already exist, it can match variant source folders to final listings by thumbnail digest.
 
+When matching existing final listing folders, compare exact normalized names only. Normalize by removing the leading product code and non-alphanumeric characters, then comparing lowercase keys. Never use suffix matching: `SweatshirtMockup` and `SunsetSkyTShirtMockup` must not match `TshirtMockup`.
+
 ## Final Packaging
 
 Final ZIP packaging happens after Step 4 metadata work, not during Step 3. Step 4 determines final titles and CSV `Filename` values, then aligns the final listing folders and PSDT filenames to that approved mapping. Use `zip-final-listings.py` only after folder alignment is complete.

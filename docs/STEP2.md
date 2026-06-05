@@ -337,6 +337,13 @@ Source priority:
 3. If the product-level `Adobe` folder has nested variant folders, generate a separate `Preview1.jpg` for each matched final listing folder.
 4. If no usable Adobe JPGs exist, fall back to `Preview files`.
 
+Output folder matching:
+
+- When final listing folders already exist, match the source product to output folders by exact normalized name only.
+- Normalization removes the leading product code and non-alphanumeric characters, then compares lowercase keys.
+- Do not use suffix matching. `SweatshirtMockup` and `SunsetSkyTShirtMockup` must never match source product key `TshirtMockup`.
+- If thumbnail digests are available, digest matching may still route a source to its exact final listing folder.
+
 Default grid schema:
 
 ```text

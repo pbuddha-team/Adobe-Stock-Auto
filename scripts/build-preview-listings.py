@@ -56,6 +56,10 @@ def clean_product_name(product_dir: Path) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "", name)
 
 
+def listing_name_key(path: Path) -> str:
+    return clean_product_name(path).lower()
+
+
 def is_jpg(path: Path) -> bool:
     return path.suffix.lower() in {".jpg", ".jpeg"}
 
@@ -478,14 +482,14 @@ def output_for_source(
 
 
 def matching_existing_outputs(product_dir: Path, output_root: Path) -> list[Path]:
-    product_name = clean_product_name(product_dir).lower()
+    product_name = listing_name_key(product_dir)
     if not output_root.is_dir():
         return []
     return sorted(
         [
             path
             for path in output_root.iterdir()
-            if path.is_dir() and path.name.lower().endswith(product_name)
+            if path.is_dir() and listing_name_key(path) == product_name
         ],
         key=lambda path: path.name.lower(),
     )
