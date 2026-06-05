@@ -132,6 +132,8 @@ Apply these rules for generated titles, filenames, and keywords:
 - Order keywords by importance. The first 10 keywords carry the most search weight.
 - Enforce Adobe's 49-keyword maximum strictly. The target range is 15-35 strong, relevant keywords; exceed 35 only when every extra keyword is specific, accurate, and useful.
 - Use accurate, literal descriptors first. Add conceptual/use-case terms only when relevant.
+- Split descriptive compound phrases into separate keyword tags. For example, do not write `prism aberration photo effect`; write `prism, aberration, photo, effect`.
+- For Pixelbuddha template metadata, also split template and use-case phrases unless a proper name or recognized fixed term truly requires the phrase. Prefer `photo, effect`, `poster, design`, `smart, object`, `high, resolution`, and `social, media` over compound keyword cells.
 - Do not keyword spam or bulk-apply metadata without adjusting each asset.
 - Avoid brand names, trademarks, product names, people names, offensive terms, camera specs, and file-size information.
 - Avoid irrelevant background objects and unnecessary synonym stuffing.
@@ -144,38 +146,49 @@ Apply these rules for generated titles, filenames, and keywords:
 
 The prior CSV uses repeatable template-product metadata, not literal photo-scene metadata. Treat it as historical reference, not as a target density rule. Pixelbuddha submits template PSDT files in official template categories, so metadata should prioritize editable product type and buyer use cases:
 
-Photo-effect rows commonly start keywords with:
+Photo-effect rows historically used compound keyword phrases such as:
 
 ```text
 photo effect, poster design or album cover, cover art, music art, social media, branding, advertising, print design, high resolution
 ```
 
-Text-effect rows commonly start with:
+Text-effect rows historically used compound keyword phrases such as:
 
 ```text
 text effect, typography effect, text style, editable text, easy edit, layered, high resolution, logo, branding, poster design
 ```
 
-Rows then add distinctive effect phrases derived from the product name and visuals, for example:
+Rows historically added distinctive effect phrases derived from the product name and visuals, for example:
 
 ```text
 bad scan photo effect, grainy print photo effect, b&w print photo effect
 urban spray text effect, aerosol text effect, graffiti smudge text effect
 ```
 
-Rows usually end with reusable template/mechanics terms:
+Rows historically ended with reusable template/mechanics terms:
 
 ```text
 psd, Photoshop, mockup, mock up, product, scene, showcase, photography, insert, image, place, psdt, smart object, layered, customizable, editable, customize, edit, 4500 x 3000 px, rgb
 ```
 
-Do not blindly copy this tail. The current policy is Adobe-aligned: keep the first 10 highly relevant, target 15-35 strong keywords, and never exceed 49. Remove duplicate, near-duplicate, unsupported, or low-value mechanics terms first.
+Treat these prior examples as evidence of useful concepts, not as output format. The current policy is Adobe-aligned: write the useful words as separate keyword tags, keep the first 10 highly relevant, target 15-35 strong keywords, and never exceed 49. Remove duplicate, near-duplicate, unsupported, or low-value mechanics terms first.
+
+Compound-to-keyword examples:
+
+```text
+prism aberration photo effect -> prism, aberration, photo, effect
+bad scan photo effect -> bad, scan, photo, effect
+poster design -> poster, design
+social media -> social, media
+smart object -> smart, object
+high resolution -> high, resolution
+```
 
 Keyword de-duplication policy:
 
 - Use one spelling for near-duplicates by default. Prefer `mockup` over `mock up`.
 - Use `psd` when a broad format keyword is useful; add `psdt` only when the specific template format is important for the row.
-- Prefer buyer-action terms like `editable`, `customizable`, and `smart object`; do not also add low-value variants such as `edit` or `customize` unless they describe a distinct supported feature.
+- Prefer buyer-action terms like `editable` and `customizable`; use `smart, object` as separate tags when smart-object editing is relevant. Do not also add low-value variants such as `edit` or `customize` unless they describe a distinct supported feature.
 - Keep both terms only when search intent is meaningfully different and both are accurate for the file.
 
 ## Title Policy
@@ -245,26 +258,26 @@ For each row:
 
 1. Read the initial product title and identify the category: `mockup`, `photo effect`, `text effect`, `graphics template`, `overlay`, etc.
 2. Extract title-critical terms from the approved final title.
-3. Extract the target use case: `poster design`, `album cover`, `logo`, `branding`, `social media`, etc.
-4. Extract the distinctive look from title/source/previews: `damaged scanner`, `pencil sketch`, `retro papers`, `grain`, `monochrome`, etc.
-5. Build the first 10 keywords from the title and core buyer intent.
-6. Add accurate supporting effect words, style words, and template mechanics.
+3. Extract the target use case as concepts, then split them into separate tags: `poster, design`, `album, cover`, `logo`, `branding`, `social, media`, etc.
+4. Extract the distinctive look from title/source/previews, then split it into separate tags: `damaged, scanner`, `pencil, sketch`, `retro, paper`, `grain`, `monochrome`, etc.
+5. Build the first 10 keywords from the approved title and core buyer intent, using separate word tags rather than compound phrases.
+6. Add accurate supporting effect words, style words, and template mechanics as separate tags.
 7. Remove non-relevant terms, duplicate terms, near-duplicate synonyms, and anything unsupported by the asset.
 8. Vary order across sibling rows so similar assets do not compete with identical metadata.
 9. Validate the final keyword count: target 15-35 strong keywords and never exceed 49.
 
-Recommended top-ten templates:
+Recommended top keyword patterns:
 
 Photo effect:
 
 ```text
-photo effect, [primary use case], [secondary use case], [distinctive effect phrase], [style/look], Photoshop, psd, smart object, editable, high resolution
+photo, effect, [primary use-case words], [secondary use-case words], [distinctive effect words], Photoshop, psd, smart, object, editable, high, resolution
 ```
 
 Text effect:
 
 ```text
-text effect, typography effect, text style, [distinctive text effect phrase], logo, branding, poster design, Photoshop, psd, editable
+text, effect, typography, style, [distinctive effect words], logo, branding, poster, design, Photoshop, psd, editable
 ```
 
 ## Number of Pages or Options
@@ -335,7 +348,8 @@ Before saving or uploading:
 - Every final listing folder has been renamed to its approved `Filename` stem.
 - The PSDT inside every final listing folder has been renamed to the approved `Title` plus `.PSDT`.
 - `Title` is non-empty and unique enough across the batch.
-- Important title words appear in the first 10 keywords.
+- Important title words appear as separate tags in the first 10 keywords where possible.
+- Descriptive compound phrases are disaggregated into separate tags, for example `prism, aberration, photo, effect`, not `prism aberration photo effect`.
 - Keyword count is 15-35 by default and never above 49.
 - `Template Category` uses an approved code.
 - `Template Size` matches the final PSDT canvas dimensions parsed from metadata.
