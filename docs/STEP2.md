@@ -80,6 +80,7 @@ The `stages.finalPackaging` section should include:
 - Leave all source folders intact for manual inspection.
 - Copy files into the final output folder; do not move source files.
 - Every source PSD used for an output listing must be checked for `300 PPI`.
+- Normalize Photoshop resolution units before failing a PSD. Some valid `300 PPI` files store raw resolution as `762` with a pixels-per-centimeter unit; treat that as `300 PPI` because `762 / 2.54 = 300`.
 - If a source PSD is not `300 PPI`, stop that listing with an error.
 - Final PSD files use the `.PSDT` extension.
 - Final folder names do not contain spaces.

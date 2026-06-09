@@ -237,6 +237,7 @@ Global rules:
 - Create `BatchDDMMYY/Adobe/` before processing.
 - Every final listing folder must contain exactly one `.PSDT` and `Thumbnail.jpg`.
 - Check every source PSD used for output is `300 PPI`.
+- Normalize Photoshop resolution units before failing a PSD. Some valid `300 PPI` files store raw resolution as `762` with a pixels-per-centimeter unit; treat that as `300 PPI` because `762 / 2.54 = 300`.
 - If a source PSD is not `300 PPI`, stop that listing and log an actionable error.
 - Final folder names do not contain spaces.
 - Final PSDT filenames do contain spaces.
