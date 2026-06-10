@@ -10,6 +10,8 @@ const PRODUCTS_ROOT = process.env.DROPBOX_PRODUCTS_ROOT || "/Pixelbuddha/Product
 const MAX_SEARCH_PAGES = Number(process.env.DROPBOX_MAX_SEARCH_PAGES || 25);
 const MAX_PSD_BYTES = Number(process.env.DROPBOX_MAX_PSD_MB || 500) * 1024 * 1024;
 const STEP1_LOG_PATH = process.env.STEP1_LOG_PATH || "step1-log.json";
+const GENERATIVE_AI_KEYWORDS = ["Generative AI", "Generative"];
+const AI_MARKER_PATTERN = /\(\s*A\.?I\.?\s*\)|(?:^|[^A-Za-z0-9])A\.?I\.?(?=$|[^A-Za-z0-9])/i;
 const COMMANDS = new Map([
   ["today", 0],
   ["prodtoday", 0],
@@ -502,6 +504,10 @@ async function printAdobeAutoProducts(token, targetDate, options) {
     console.log(`- ${product.productId || "(no id)"} | ${product.name || "(no name)"}`);
     if (product.path) console.log(`  Path: ${product.path}`);
     if (product.link) console.log(`  Link: ${product.link}`);
+    const aiMarker = detectProductAiMarker(product);
+    if (aiMarker.detected) {
+      console.log(`  AI marker: ${aiMarker.marker} in ${aiMarker.source}; add ${GENERATIVE_AI_KEYWORDS.join(", ")} keywords in Step 4`);
+    }
   }
 
   if (options.download) {
@@ -605,6 +611,7 @@ function createStep1Log(targetDate, autoJsonPath, products, options) {
       name: product.name || "",
       productId: product.productId || "",
       dropboxPath: product.path || "",
+      aiMarker: detectProductAiMarker(product),
       localPath: "",
       status: "pending",
       totalFiles: 0,
@@ -766,7 +773,39 @@ function printResults(dateCode, products, filterDescription) {
     console.log(`- ${product.productId} | ${product.folderName}`);
     console.log(`  Path: ${product.path}`);
     console.log(`  Link: ${product.link}`);
+    const aiMarker = detectProductAiMarker(product);
+    if (aiMarker.detected) {
+      console.log(`  AI marker: ${aiMarker.marker} in ${aiMarker.source}; add ${GENERATIVE_AI_KEYWORDS.join(", ")} keywords in Step 4`);
+    }
   }
+}
+
+function detectProductAiMarker(product) {
+  const candidates = [
+    ["product folder title", product.name || product.folderName || ""],
+    ["Dropbox path", product.path || ""],
+  ];
+
+  for (const [source, value] of candidates) {
+    const match = String(value).match(AI_MARKER_PATTERN);
+    if (match) {
+      return {
+        detected: true,
+        source,
+        marker: match[0].trim(),
+        keywordTags: GENERATIVE_AI_KEYWORDS,
+        note: "Source product folder/title contains an AI marker; add template generative-AI keywords in Step 4 metadata.",
+      };
+    }
+  }
+
+  return {
+    detected: false,
+    source: null,
+    marker: null,
+    keywordTags: [],
+    note: null,
+  };
 }
 
 function exitWithUsage(message) {

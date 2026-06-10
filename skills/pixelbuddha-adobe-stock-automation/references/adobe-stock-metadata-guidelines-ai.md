@@ -187,6 +187,10 @@ Generative AI assets are subject to strict metadata constraints 8:
 * **No Classifiers:** The term "generative AI" or similar system tags must not be added to titles or keywords.8  
 * **Illustrative Editorial Collection Ban:** Generative AI assets are barred from submission to the Illustrative Editorial Collection, which is reserved for unmodified, real-world editorial content.8
 
+### Pixelbuddha template PSDT exception
+
+For Pixelbuddha's Adobe Stock design-template scope, apply the template-specific rule in `metadata-csv.md` when the source Dropbox product folder/title contains a standalone `(AI)` / `(A.I.)` marker. The marker means a submitted template scene or embedded visual was generated. Because the normal generative-AI portal checkbox is not available for this template workflow, add the exact keyword tags `Generative AI` and `Generative` to the affected CSV row only. Do not add AI terms to the title, final filename, listing folder name, PSDT filename, or ZIP filename. This template-specific exception overrides the general non-template "No Classifiers" keyword rule for marked Pixelbuddha PSDT template listings.
+
 ## **Quality Assurance, Account Governance, and Suppression Protections**
 
 To protect the quality of the catalog, Adobe Stock uses automated and human curation tools that flag low-quality, spam, or duplicate content.9

@@ -94,13 +94,15 @@ If a stage did not run or old data is unavailable, keep the stage object and set
 
 ## Stage Guidelines
 
-`step1FetchDropboxBatch` records Dropbox queue selection, downloaded product folders, skipped large PSDs, and credential/config checks. Do not write secrets.
+`step1FetchDropboxBatch` records Dropbox queue selection, downloaded product folders, skipped large PSDs, source product AI markers, and credential/config checks. Do not write secrets.
 
 `step2PrepareListingFolders` records source product to initial listing folder mapping, selected PSD/PSDT, PPI validation, thumbnail source, and any scenario selection.
 
 `step3BuildPreview1` records preview source folders, selected grid images, thumbnail source, generated `Preview1.jpg`, generated `Thumbnail.jpg`, selection notes, warnings, and errors.
 
 `step4MetadataCsv` records CSV path, header, instruction row, row count, final row metadata, parsed PSDT dimensions/colorspace, option-count signals, keyword count, warnings, and errors.
+
+If a source product has a standalone `(AI)` / `(A.I.)` marker in its Dropbox folder title/path, propagate it to the relevant Step 4 row audit as `generativeAi.detected = true`, record the marker source, and record that `Generative AI` and `Generative` were added to keywords only.
 
 `step4ListingAlignment` records folder renames from Step 2/3 working names to approved CSV `Filename` stems, and PSDT renames from working product names to approved Step 4 titles.
 
@@ -130,6 +132,12 @@ Use this row shape wherever a stage audits a final listing:
     "colorspace": "RGB",
     "numberOfPagesOrOptions": "3 design options",
     "disclaimers": "Photos or design elements shown in the preview are for display only and are not included in the downloaded file"
+  },
+  "generativeAi": {
+    "detected": false,
+    "source": null,
+    "marker": null,
+    "keywordTags": []
   },
   "optionSignals": [],
   "warnings": [],

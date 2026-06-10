@@ -6,6 +6,7 @@ Official sources:
 
 - Adobe HelpX: `https://helpx.adobe.com/stock/contributor/help/artist-hub-migration/maximize-metadata-to-get-discovered.html`
 - Adobe Stock Metadata Guide PDF: `https://stock.adobe.com/pages/artisthub/pdf/2023-adobe-stock-metadata-guide.pdf`
+- Adobe Stock generative AI guidance for design templates: `https://new.express.adobe.com/webpage/UzM28HpVf5IWC`
 - Team research source of truth: `references/adobe-stock-metadata-guidelines-ai.md`
 - Adobe Stock template metadata workbook: `assets/AdobeStockTemplates_MetadataForm_Portal_6-2023.xlsx`
 
@@ -140,7 +141,30 @@ Apply these rules for generated titles, filenames, and keywords:
 - Avoid copying identical titles and keyword orders across similar files; diversify per listing.
 - For localized content, include city/country keywords when truly relevant.
 - Pixelbuddha scope is Adobe Stock template PSDT submissions, not stock photo submissions. Do not add stock-photo people-presence keywords such as `no people` or `nobody` by default.
-- Generative-AI flags, fictional people/property flags, model releases, and property releases are out of scope for the entire Pixelbuddha automation. Do not add AI labels, release notes, or `generative AI` terms to CSV metadata, titles, or keywords.
+- Generative-AI portal checkboxes, fictional people/property flags, model releases, and property releases are out of scope for the Pixelbuddha automation. For template PSDT products, handle source folder AI markers with the template-specific keyword rule below.
+
+## Generative AI Marker Rule for Templates
+
+Pixelbuddha submits Adobe Stock template PSDT files. When the source Dropbox product folder/title marks a generated scene with an explicit AI marker, such as `(AI)` or `(A.I.)`, treat that as a template generative-AI metadata signal.
+
+Detection inputs:
+
+- Step 1 `step1-log.json` product entries under `aiMarker`.
+- Source product folder names downloaded from Dropbox.
+- Source Dropbox paths when the folder title is unavailable.
+
+Apply this rule only when the AI marker is a standalone marker. Do not infer AI from letter sequences inside ordinary words such as `grain`, `rain`, or `paint`.
+
+If `aiMarker.detected` is `true` for the source product:
+
+1. Add `Generative AI` and `Generative` to the row's `Keywords`.
+2. Keep `Generative AI` as the exact phrase keyword. This is an exception to the normal compound-splitting rule because Adobe's template guidance asks for that phrase.
+3. Place these AI keywords after the core title/use-case keywords, not before the strongest buyer-search terms, unless the row has very few keywords.
+4. Do not add `AI`, `Generative AI`, `Generative`, or `(AI)` to the `Title`.
+5. Remove `(AI)` / `(A.I.)` from the final title, CSV `Filename`, listing folder stem, PSDT filename, and ZIP filename.
+6. Record the propagated marker and added keyword tags in the Step 4 report row.
+
+If the AI marker exists only in a non-submitted preview placeholder and not in the delivered template scene/content, do not add AI keywords. When this cannot be determined from local files, prefer the source product folder marker and add a warning rather than silently dropping the signal.
 
 ## Pixelbuddha Metadata Pattern
 
@@ -264,7 +288,8 @@ For each row:
 6. Add accurate supporting effect words, style words, and template mechanics as separate tags.
 7. Remove non-relevant terms, duplicate terms, near-duplicate synonyms, and anything unsupported by the asset.
 8. Vary order across sibling rows so similar assets do not compete with identical metadata.
-9. Validate the final keyword count: target 15-35 strong keywords and never exceed 49.
+9. If the source product has `aiMarker.detected = true`, add `Generative AI` and `Generative` as keyword tags before final count validation.
+10. Validate the final keyword count: target 15-35 strong keywords and never exceed 49.
 
 Recommended top keyword patterns:
 
@@ -350,6 +375,7 @@ Before saving or uploading:
 - `Title` is non-empty and unique enough across the batch.
 - Important title words appear as separate tags in the first 10 keywords where possible.
 - Descriptive compound phrases are disaggregated into separate tags, for example `prism, aberration, photo, effect`, not `prism aberration photo effect`.
+- Rows sourced from product folders marked `(AI)` include exact keyword tags `Generative AI` and `Generative`, while titles, filenames, folders, PSDT names, and ZIP names do not include `(AI)` or AI labels.
 - Keyword count is 15-35 by default and never above 49.
 - `Template Category` uses an approved code.
 - `Template Size` matches the final PSDT canvas dimensions parsed from metadata.

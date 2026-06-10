@@ -224,6 +224,7 @@ Behavior:
 - Treat selected records as the Adobe-auto queue.
 - Download each product folder into `./BatchDDMMYY`.
 - Skip `.psd` files over `DROPBOX_MAX_PSD_MB`.
+- Detect standalone AI markers such as `(AI)` or `(A.I.)` in selected Dropbox product folder titles/paths and write the result to each Step 1 log product entry as `aiMarker`.
 - Append real-run records to `step1-log.json`; dry runs do not write logs.
 
 Report back selected products, skipped PSDs, final batch folder, and log path. Later steps should consume the local batch unless fresh Dropbox metadata or uploads are explicitly needed.
@@ -373,6 +374,7 @@ Core rules:
 - Rename each final listing folder to the approved CSV `Filename` stem before packaging.
 - Rename the single PSDT inside each final listing folder to the approved Step 4 title plus `.PSDT`.
 - Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
+- Check Step 1 `aiMarker` data and source product folder names. If a source product was marked `(AI)` / `(A.I.)`, strip that marker from titles and filenames, then add exact keyword tags `Generative AI` and `Generative` to the CSV row.
 - Validate that each CSV row maps to an aligned final listing folder, a same-title PSDT, required preview files, and then to a generated ZIP after final packaging.
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
 - Before writing, create or preserve an audit trail in `BatchDDMMYY/Adobe/BatchDDMMYY-automation-report.json` under `stages.step4MetadataCsv` and `stages.step4ListingAlignment`.
