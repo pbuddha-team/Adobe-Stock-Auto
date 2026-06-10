@@ -128,6 +128,7 @@ Apply these rules for generated titles, filenames, and keywords:
 
 - Write metadata in one language per submission.
 - Make titles concise, natural, factual, and searchable.
+- Write the final CSV `Title` in Pixelbuddha Title Case: capitalize every word, including short connector words such as `For`, `And`, `Of`, and `To`. Use the same Title Case string for the final PSDT filename.
 - Adobe allows up to 200 title characters, but use 70-90 characters as the normal working range so titles include useful search terms without becoming bloated.
 - If a word is important enough for the title, include it in the keywords, preferably in the first 10.
 - Order keywords by importance. The first 10 keywords carry the most search weight.
@@ -226,6 +227,17 @@ The initial product title is the primary source for:
 - Distinctive style/effect/material words.
 - Variant intent when present, such as horizontal, vertical, poster, album cover, social media, logo, branding, or typography.
 
+Use `Thumbnail.jpg` as supporting title evidence. A vision-capable agent may inspect the thumbnail to confirm visible product type, material, scene context, orientation, and buyer use case. This is especially useful for mockups where the original title is broad but the thumbnail clearly shows the object or context, such as a delivery box, bottle, storefront, apparel item, or device screen.
+
+Vision evidence can add value when it:
+
+- Confirms the exact mockup object or template subject.
+- Clarifies buyer context, such as packaging, logo presentation, ecommerce branding, poster artwork, social media, or apparel branding.
+- Distinguishes sibling variants that share the same source title.
+- Flags a mismatch between source title and visible listing content.
+
+Do not let vision overfit incidental background details. Do not title a listing from decorative scenery, placeholder photo subjects, temporary preview text, or objects that are not part of the delivered template value. If thumbnail evidence conflicts with the PSDT/source structure, inspect the final PSDT/listing folder and record a warning rather than guessing.
+
 Title composition:
 
 ```text
@@ -235,25 +247,27 @@ Title composition:
 Examples:
 
 ```text
-Damaged scanner photo effect for poster and social media design
-Pencil sketch photo effect for portrait artwork and print design
-Retro paper overlay graphics template for collage and branding
-Metal water bottle mockup for reusable drinkware branding
-Glowing fade text effect for logo and poster typography
+Damaged Scanner Photo Effect For Poster And Social Media Design
+Pencil Sketch Photo Effect For Portrait Artwork And Print Design
+Retro Paper Overlay Graphics Template For Collage And Branding
+Metal Water Bottle Mockup For Reusable Drinkware Branding
+Delivery Box Mockup For Packaging Logo And Ecommerce Branding
+Glowing Fade Text Effect For Logo And Poster Typography
 ```
 
 Title rules:
 
 1. Preserve the strongest phrase from the initial product title unless it is inaccurate.
 2. Put the concrete category in the title: `mockup`, `photo effect`, `text effect`, or `graphics template`.
-3. Include the key distinctive terms from the product title and preview evidence.
-4. Add a commercial/use-case context only when it is supported by the template.
-5. Use natural language, not comma-separated keyword lists.
-6. Avoid parentheses, decorative separators, brand names, IP names, artist names, character names, camera specs, file-size specs, and style-mimicry phrases such as `in the style of`, `inspired by`, or `influenced by`.
-7. Prefer `and` over `&` in titles.
-8. Avoid technical format labels like `PSD`, `PSDT`, or `Photoshop` in the title unless the portal specifically requires them later.
-9. Keep titles unique across sibling variants. If two listings come from one product, vary the use case or orientation truthfully.
-10. Aim for 70-90 characters, but allow shorter titles when they are complete and commercially clear.
+3. Write the title in Pixelbuddha Title Case, capitalizing every word.
+4. Include the key distinctive terms from the product title and thumbnail/preview evidence.
+5. Add a commercial/use-case context only when it is supported by the template.
+6. Use natural language, not comma-separated keyword lists.
+7. Avoid parentheses, decorative separators, brand names, IP names, artist names, character names, camera specs, file-size specs, and style-mimicry phrases such as `In The Style Of`, `Inspired By`, or `Influenced By`.
+8. Prefer `And` over `&` in titles.
+9. Avoid technical format labels like `PSD`, `PSDT`, or `Photoshop` in the title unless the portal specifically requires them later.
+10. Keep titles unique across sibling variants. If two listings come from one product, vary the use case or orientation truthfully.
+11. Aim for 70-90 characters, but allow shorter titles when they are complete and commercially clear.
 
 Final portal filenames should be derived from approved Step 4 titles, not from Step 2/Step 3 temporary folder names. Filenames may be compact and filesystem-safe, but they should remain traceable to the approved title and row.
 
@@ -268,10 +282,10 @@ Example:
 
 ```text
 Filename: DamagedScannerPhotoEffectforPosterandSocialMediaDesign.zip
-Title: Damaged scanner photo effect for poster and social media design
+Title: Damaged Scanner Photo Effect For Poster And Social Media Design
 
 Adobe/DamagedScannerPhotoEffectforPosterandSocialMediaDesign/
-  Damaged scanner photo effect for poster and social media design.PSDT
+  Damaged Scanner Photo Effect For Poster And Social Media Design.PSDT
   Thumbnail.jpg
   Preview1.jpg
 ```
@@ -372,7 +386,7 @@ Before saving or uploading:
 - Every `Filename` maps to an existing final listing folder and a planned final ZIP path.
 - Every final listing folder has been renamed to its approved `Filename` stem.
 - The PSDT inside every final listing folder has been renamed to the approved `Title` plus `.PSDT`.
-- `Title` is non-empty and unique enough across the batch.
+- `Title` is non-empty, unique enough across the batch, and written in Pixelbuddha Title Case.
 - Important title words appear as separate tags in the first 10 keywords where possible.
 - Descriptive compound phrases are disaggregated into separate tags, for example `prism, aberration, photo, effect`, not `prism aberration photo effect`.
 - Rows sourced from product folders marked `(AI)` include exact keyword tags `Generative AI` and `Generative`, while titles, filenames, folders, PSDT names, and ZIP names do not include `(AI)` or AI labels.

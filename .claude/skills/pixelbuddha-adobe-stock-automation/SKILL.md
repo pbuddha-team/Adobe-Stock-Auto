@@ -372,8 +372,9 @@ Core rules:
 - Treat listing folder names, PSDT filenames, product IDs, and automation reports as authoritative local inputs.
 - Determine final portal-facing titles and CSV `Filename` values before packaging ZIPs.
 - Rename each final listing folder to the approved CSV `Filename` stem before packaging.
-- Rename the single PSDT inside each final listing folder to the approved Step 4 title plus `.PSDT`.
-- Generate titles/descriptions/keywords with copywriter judgment, but keep product key phrases intact.
+- Rename the single PSDT inside each final listing folder to the approved Step 4 Title Case title plus `.PSDT`.
+- Generate titles/descriptions/keywords with copywriter judgment, keep product key phrases intact, and write metadata titles in Pixelbuddha Title Case.
+- Use `Thumbnail.jpg` or a vision-capable inspection as supporting evidence for product object, material, scene context, and buyer use case; do not let incidental preview background details override the source title or delivered PSDT content.
 - Check Step 1 `aiMarker` data and source product folder names. If a source product was marked `(AI)` / `(A.I.)`, strip that marker from titles and filenames, then add exact keyword tags `Generative AI` and `Generative` to the CSV row.
 - Validate that each CSV row maps to an aligned final listing folder, a same-title PSDT, required preview files, and then to a generated ZIP after final packaging.
 - Avoid spreadsheet formula injection in user-controlled text fields by escaping leading `=`, `+`, `-`, and `@` if the target CSV will be opened in spreadsheet software and the platform allows escaping.
