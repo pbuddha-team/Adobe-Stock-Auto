@@ -18,6 +18,10 @@ This skill is model-provider agnostic. It does not require OpenAI, Anthropic, Cl
 
 Use deterministic scripts for Dropbox fetching, Preview1/Thumbnail generation, and final ZIP packaging. Do not replace those scripts with ad hoc model reasoning. For DeepSeek-powered or other generic agents, load this file as the primary instruction document, then follow the same commands and references. Claude Code and Codex installation paths are convenience options, not workflow requirements.
 
+## Skill Updates
+
+Employee-facing skill updates are read-only repository consumption. If the employee asks to update the skill, pull or reinstall the latest approved version from GitHub, then continue the batch workflow. Do not ask the employee to commit or push. Repository commits and pushes are maintainer-only work.
+
 ## Start Gently
 
 At the beginning of a new employee setup or first run, ask one short question before doing anything else:

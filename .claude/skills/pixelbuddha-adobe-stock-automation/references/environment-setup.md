@@ -107,7 +107,7 @@ Minimum agent capabilities:
 - Read Markdown files from the repository.
 - Run shell commands in the repository folder.
 - Edit files when the workflow requires it.
-- Ask the employee for approval before installing software, writing credentials, deleting files, or committing/pushing changes.
+- Ask the employee for approval before installing software, writing credentials, or deleting files.
 
 Provider-specific API keys are not required by this automation. The AI model provider only affects the chat/coding interface; the workflow itself runs through local Node.js and Python scripts plus Dropbox credentials.
 
@@ -118,6 +118,8 @@ skills/pixelbuddha-adobe-stock-automation/SKILL.md
 ```
 
 Then ask it to follow the skill from the repository root. If the agent has no native "skill" feature, it can still operate by reading `SKILL.md` and loading referenced files only when needed.
+
+If the employee asks to update the skill, update the local copy from GitHub only. Do not commit or push from an employee machine.
 
 ## Claude Code Setup
 
@@ -148,6 +150,12 @@ Clone or open the repository:
 ```sh
 git clone https://github.com/pbuddha-team/Adobe-Stock-Auto.git
 cd Adobe-Stock-Auto
+```
+
+For an existing clone, get the latest approved skill and scripts:
+
+```sh
+git pull
 ```
 
 Create local credentials from the example:

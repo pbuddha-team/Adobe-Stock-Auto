@@ -28,6 +28,32 @@ Then run it from the repository root.
 
 For Claude Code, start Claude from this repository root or any folder below it. Claude discovers project skills from `.claude/skills/<skill-name>/SKILL.md`. To install it as a personal Claude skill, copy `.claude/skills/pixelbuddha-adobe-stock-automation/` into `~/.claude/skills/`.
 
+### Getting the Latest Skill
+
+Employee machines should consume the latest approved skill, not maintain the repository. Ask the agent to update the local copy from GitHub, then run the batch workflow.
+
+If the employee works from a cloned repository:
+
+```sh
+git pull
+```
+
+If the employee installed a personal Claude skill, refresh the local skill folder from the updated repository copy:
+
+```sh
+rm -rf ~/.claude/skills/pixelbuddha-adobe-stock-automation
+cp -R .claude/skills/pixelbuddha-adobe-stock-automation ~/.claude/skills/
+```
+
+On Windows PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\skills\pixelbuddha-adobe-stock-automation"
+Copy-Item -Recurse .claude\skills\pixelbuddha-adobe-stock-automation "$env:USERPROFILE\.claude\skills\"
+```
+
+Employees should not commit or push changes. Process or skill changes are maintainer work and should be handled in this repository separately.
+
 ## Local Setup
 
 Check required tools:
