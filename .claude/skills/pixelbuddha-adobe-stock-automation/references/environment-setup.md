@@ -180,6 +180,7 @@ STEP1_LOG_PATH=step1-log.json
 Optional:
 
 ```text
+DROPBOX_RE_AUTO_JSON_PATH=/Products/re_auto.json
 DROPBOX_BATCH_ROOT=.
 DROPBOX_PRODUCTS_ROOT=/Pixelbuddha/Products
 DROPBOX_SELECT_USER=

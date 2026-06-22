@@ -1,6 +1,6 @@
 ---
 name: pixelbuddha-adobe-stock-automation
-description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh employee environment in Codex, Claude Code, or any compatible filesystem/shell AI agent including DeepSeek-powered agents: choose English or Russian, verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain canonical batch reports. Use when the user asks to run, install, document, debug, or extend Pixelbuddha Adobe Stock automation."
+description: "End-to-end Pixelbuddha Adobe Stock automation for a fresh employee environment in Codex, Claude Code, or any compatible filesystem/shell AI agent including DeepSeek-powered agents: choose English or Russian, verify local tools, fetch Dropbox Adobe-auto product batches from /Products/auto.json or resubmit batches from /Products/re_auto.json, prepare final PSDT/Thumbnail listing folders, generate Preview1 grids, create metadata CSV rows, determine final portal filenames, package ZIP listings, and maintain canonical batch reports. Use when the user asks to run, install, document, debug, or extend Pixelbuddha Adobe Stock automation."
 ---
 
 # Pixelbuddha Adobe Stock Automation
@@ -107,6 +107,7 @@ Optional:
 
 ```text
 DROPBOX_ACCESS_TOKEN=
+DROPBOX_RE_AUTO_JSON_PATH=/Products/re_auto.json
 DROPBOX_BATCH_ROOT=.
 DROPBOX_PRODUCTS_ROOT=/Pixelbuddha/Products
 DROPBOX_SELECT_USER=
@@ -210,19 +211,27 @@ Run today's Adobe-auto queue:
 node scripts/dropbox-products.mjs step1
 ```
 
+Run today's resubmit queue:
+
+```sh
+node scripts/dropbox-products.mjs step1 --resubmit
+```
+
 Run a specific date:
 
 ```sh
 node scripts/dropbox-products.mjs step1 --date 2026-05-18
 node scripts/dropbox-products.mjs step1 --date 180526
+node scripts/dropbox-products.mjs step1 --resubmit --date 2026-05-18
 ```
 
 Behavior:
 
 - Read `/Products/auto.json` via Dropbox API.
+- If the user requests a resubmit batch, run `step1 --resubmit`, read `/Products/re_auto.json`, set Step 1 `track` to `resubmit`, and write files into `BatchDDMMYY-Resubmit`.
 - Select records matching today's local date or explicit `--date`.
-- Treat selected records as the Adobe-auto queue.
-- Download each product folder into `./BatchDDMMYY`.
+- Treat selected records as the active Adobe-auto or resubmit queue.
+- Download each product folder into `./BatchDDMMYY` for normal batches or `./BatchDDMMYY-Resubmit` for resubmit batches.
 - Skip `.psd` files over `DROPBOX_MAX_PSD_MB`.
 - Detect standalone AI markers such as `(AI)` or `(A.I.)` in selected Dropbox product folder titles/paths and write the result to each Step 1 log product entry as `aiMarker`.
 - Append real-run records to `step1-log.json`; dry runs do not write logs.

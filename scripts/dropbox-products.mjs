@@ -10,6 +10,8 @@ const PRODUCTS_ROOT = process.env.DROPBOX_PRODUCTS_ROOT || "/Pixelbuddha/Product
 const MAX_SEARCH_PAGES = Number(process.env.DROPBOX_MAX_SEARCH_PAGES || 25);
 const MAX_PSD_BYTES = Number(process.env.DROPBOX_MAX_PSD_MB || 500) * 1024 * 1024;
 const STEP1_LOG_PATH = process.env.STEP1_LOG_PATH || "step1-log.json";
+const NORMAL_AUTO_JSON_NAME = "auto.json";
+const RESUBMIT_AUTO_JSON_NAME = "re_auto.json";
 const GENERATIVE_AI_KEYWORDS = ["Generative AI", "Generative"];
 const AI_MARKER_PATTERN = /\(\s*A\.?I\.?\s*\)|(?:^|[^A-Za-z0-9])A\.?I\.?(?=$|[^A-Za-z0-9])/i;
 const COMMANDS = new Map([
@@ -478,7 +480,8 @@ async function downloadText(token, path) {
 }
 
 async function printAdobeAutoProducts(token, targetDate, options) {
-  const autoJsonPath = await resolveAutoJsonPath(token, options.path || process.env.DROPBOX_AUTO_JSON_PATH);
+  const track = getBatchTrack(options);
+  const autoJsonPath = await resolveAutoJsonPath(token, getExplicitAutoJsonPath(options, track), track);
   const text = await downloadText(token, autoJsonPath);
   const data = JSON.parse(text);
   const markers = getDateMarkers(targetDate);
@@ -488,8 +491,9 @@ async function printAdobeAutoProducts(token, targetDate, options) {
     .map((record) => summarizeAutoRecord(record))
     .sort((a, b) => String(a.productId).localeCompare(String(b.productId)));
 
-  console.log(`Adobe auto products for ${markers.iso}`);
+  console.log(`Adobe ${track === "resubmit" ? "resubmit" : "auto"} products for ${markers.iso}`);
   console.log(`Source: ${autoJsonPath}`);
+  console.log(`Track: ${track}`);
   console.log("");
 
   if (products.length === 0) {
@@ -511,17 +515,28 @@ async function printAdobeAutoProducts(token, targetDate, options) {
   }
 
   if (options.download) {
-    const log = createStep1Log(targetDate, autoJsonPath, products, options);
+    const log = createStep1Log(targetDate, autoJsonPath, products, options, track);
     await downloadAutoProducts(token, products, targetDate, options, log);
     finishStep1Log(log);
     await writeStep1Log(log, options);
   }
 }
 
-async function resolveAutoJsonPath(token, explicitPath) {
+function getBatchTrack(options) {
+  return options.resubmit ? "resubmit" : "normal";
+}
+
+function getExplicitAutoJsonPath(options, track) {
+  if (options.path) return options.path;
+  if (track === "resubmit") return process.env.DROPBOX_RE_AUTO_JSON_PATH;
+  return process.env.DROPBOX_AUTO_JSON_PATH;
+}
+
+async function resolveAutoJsonPath(token, explicitPath, track = "normal") {
+  const queueFileName = track === "resubmit" ? RESUBMIT_AUTO_JSON_NAME : NORMAL_AUTO_JSON_NAME;
   const candidates = explicitPath
     ? [explicitPath]
-    : [`${PRODUCTS_ROOT.replace(/\/$/, "")}/auto.json`, "/Products/auto.json"];
+    : [`${PRODUCTS_ROOT.replace(/\/$/, "")}/${queueFileName}`, `/Products/${queueFileName}`];
 
   let lastError;
   for (const candidate of candidates) {
@@ -538,7 +553,7 @@ async function resolveAutoJsonPath(token, explicitPath) {
 }
 
 async function downloadAutoProducts(token, products, targetDate, options, log) {
-  const batchFolderName = getBatchFolderName(targetDate);
+  const batchFolderName = getBatchFolderName(targetDate, getBatchTrack(options));
   const destinationRoot = resolve(options.dest || process.env.DROPBOX_BATCH_ROOT || ".");
   const batchRoot = resolve(destinationRoot, batchFolderName);
 
@@ -587,18 +602,20 @@ async function writeStep1Log(log, options) {
     lastRunAt: log.finishedAt,
     lastRequestedDate: log.requestedDate,
     lastBatchFolder: log.batchFolder,
+    lastTrack: log.track || "normal",
   };
   await writeFile(logPath, `${JSON.stringify(root, null, 2)}\n`);
   console.log("");
   console.log(`Step 1 log written: ${formatLocalPath(logPath)}`);
 }
 
-function createStep1Log(targetDate, autoJsonPath, products, options) {
-  const batchFolderName = getBatchFolderName(targetDate);
+function createStep1Log(targetDate, autoJsonPath, products, options, track = getBatchTrack(options)) {
+  const batchFolderName = getBatchFolderName(targetDate, track);
   const now = new Date();
   return {
     schemaVersion: 1,
     step: "fetching",
+    track,
     requestedDate: toIsoDate(targetDate),
     batchFolder: batchFolderName,
     dryRun: Boolean(options.dryRun),
@@ -606,6 +623,7 @@ function createStep1Log(targetDate, autoJsonPath, products, options) {
     finishedAt: null,
     source: {
       dropboxAutoJsonPath: autoJsonPath,
+      dropboxQueue: track === "resubmit" ? RESUBMIT_AUTO_JSON_NAME : NORMAL_AUTO_JSON_NAME,
     },
     products: products.map((product) => ({
       name: product.name || "",
@@ -669,6 +687,7 @@ function readStep1Log(path) {
         lastRunAt: null,
         lastRequestedDate: null,
         lastBatchFolder: null,
+        lastTrack: null,
       },
     };
   }
@@ -750,11 +769,11 @@ function getDateCode(targetDate) {
   return `${day}${month}`;
 }
 
-function getBatchFolderName(targetDate) {
+function getBatchFolderName(targetDate, track = "normal") {
   const day = String(targetDate.getDate()).padStart(2, "0");
   const month = String(targetDate.getMonth() + 1).padStart(2, "0");
   const year = String(targetDate.getFullYear()).slice(-2);
-  return `Batch${day}${month}${year}`;
+  return `Batch${day}${month}${year}${track === "resubmit" ? "-Resubmit" : ""}`;
 }
 
 function printResults(dateCode, products, filterDescription) {
@@ -820,6 +839,7 @@ function exitWithUsage(message) {
   console.error("  DROPBOX_ACCESS_TOKEN=... node scripts/dropbox-products.mjs auto today");
   console.error("  DROPBOX_ACCESS_TOKEN=... node scripts/dropbox-products.mjs auto today --download");
   console.error("  node scripts/dropbox-products.mjs step1");
+  console.error("  node scripts/dropbox-products.mjs step1 --resubmit");
   console.error("  node scripts/dropbox-products.mjs step1 --date 2026-05-18");
   console.error("  node scripts/dropbox-products.mjs step1 --dry-run");
   console.error("  node scripts/dropbox-products.mjs auth-url");
@@ -827,6 +847,8 @@ function exitWithUsage(message) {
   console.error("");
   console.error("Optional env vars:");
   console.error("  DROPBOX_PRODUCTS_ROOT=/Pixelbuddha/Products");
+  console.error("  DROPBOX_AUTO_JSON_PATH=/Products/auto.json");
+  console.error("  DROPBOX_RE_AUTO_JSON_PATH=/Products/re_auto.json");
   console.error("  DROPBOX_SELECT_USER=<team member id>");
   console.error("  DROPBOX_PATH_ROOT_NAMESPACE_ID=<team namespace id>");
   console.error("  DROPBOX_BATCH_ROOT=.");
@@ -852,6 +874,8 @@ function parseOptions(values) {
     const value = values[index];
     if (value === "--dry-run") {
       parsed.dryRun = true;
+    } else if (value === "--resubmit") {
+      parsed.resubmit = true;
     } else if (value === "--subdir") {
       parsed.subdir = values[++index];
     } else if (value === "--dest") {

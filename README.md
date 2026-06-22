@@ -96,11 +96,18 @@ Fetch today's Adobe-auto batch:
 node scripts/dropbox-products.mjs step1
 ```
 
+Fetch today's resubmit batch:
+
+```sh
+node scripts/dropbox-products.mjs step1 --resubmit
+```
+
 Fetch a specific date:
 
 ```sh
 node scripts/dropbox-products.mjs step1 --date 2026-05-18
 node scripts/dropbox-products.mjs step1 --date 180526
+node scripts/dropbox-products.mjs step1 --resubmit --date 2026-05-18
 ```
 
 Build Preview1 grids after final listing folders exist:

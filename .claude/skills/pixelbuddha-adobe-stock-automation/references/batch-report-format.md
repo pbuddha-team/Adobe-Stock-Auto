@@ -94,7 +94,7 @@ If a stage did not run or old data is unavailable, keep the stage object and set
 
 ## Stage Guidelines
 
-`step1FetchDropboxBatch` records Dropbox queue selection, downloaded product folders, skipped large PSDs, source product AI markers, and credential/config checks. Do not write secrets.
+`step1FetchDropboxBatch` records Dropbox queue selection, track (`normal` or `resubmit`), downloaded product folders, skipped large PSDs, source product AI markers, and credential/config checks. Do not write secrets. Normal batches read `auto.json` and use `BatchDDMMYY`; resubmit batches read `re_auto.json` and use `BatchDDMMYY-Resubmit`.
 
 `step2PrepareListingFolders` records source product to initial listing folder mapping, selected PSD/PSDT, PPI validation, thumbnail source, and any scenario selection.
 
