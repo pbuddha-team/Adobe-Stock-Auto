@@ -368,10 +368,11 @@ async function downloadDropboxFolder(token, sourceRoot, localRoot, options) {
       throw new Error(`Refusing to write outside destination: ${target}`);
     }
 
+    const downloadPath = file.id || filePath;
     console.log(`  ${options.dryRun ? "Would download" : "Downloading"} ${relativePath}`);
     try {
       if (!options.dryRun) {
-        await downloadFile(token, filePath, target);
+        await downloadFile(token, downloadPath, target);
       }
       events.push({
         action: options.dryRun ? "would_download" : "downloaded",
